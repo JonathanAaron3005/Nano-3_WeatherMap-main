@@ -13,6 +13,8 @@
 		23A09BDA2C3D773D001DD96C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 23A09BD92C3D773D001DD96C /* Preview Assets.xcassets */; };
 		23A09BE32C3D8AB7001DD96C /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23A09BE22C3D8AB7001DD96C /* MapView.swift */; };
 		23A09BE52C3E4165001DD96C /* LocationDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23A09BE42C3E4165001DD96C /* LocationDetailsView.swift */; };
+		DC299DC02C3EAA04004BA593 /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC299DBF2C3EAA04004BA593 /* Place.swift */; };
+		DC299DC32C3EAB0E004BA593 /* PlaceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC299DC22C3EAB0E004BA593 /* PlaceService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +27,8 @@
 		23A09BE12C3D881D001DD96C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		23A09BE22C3D8AB7001DD96C /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		23A09BE42C3E4165001DD96C /* LocationDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDetailsView.swift; sourceTree = "<group>"; };
+		DC299DBF2C3EAA04004BA593 /* Place.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
+		DC299DC22C3EAB0E004BA593 /* PlaceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,11 +61,12 @@
 		23A09BD12C3D773C001DD96C /* WeatherMap */ = {
 			isa = PBXGroup;
 			children = (
+				DC299DC12C3EAB01004BA593 /* Service */,
+				DC299DBE2C3EA9E3004BA593 /* Model */,
+				DC299DBD2C3EA9D8004BA593 /* View */,
 				23A09BE12C3D881D001DD96C /* Info.plist */,
 				23A09BE02C3D774F001DD96C /* WeatherMap.entitlements */,
 				23A09BD22C3D773C001DD96C /* WeatherMapApp.swift */,
-				23A09BD42C3D773C001DD96C /* ContentView.swift */,
-				23A09BE42C3E4165001DD96C /* LocationDetailsView.swift */,
 				23A09BD62C3D773D001DD96C /* Assets.xcassets */,
 				23A09BD82C3D773D001DD96C /* Preview Content */,
 				23A09BE22C3D8AB7001DD96C /* MapView.swift */,
@@ -75,6 +80,31 @@
 				23A09BD92C3D773D001DD96C /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		DC299DBD2C3EA9D8004BA593 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				23A09BD42C3D773C001DD96C /* ContentView.swift */,
+				23A09BE42C3E4165001DD96C /* LocationDetailsView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		DC299DBE2C3EA9E3004BA593 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				DC299DBF2C3EAA04004BA593 /* Place.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		DC299DC12C3EAB01004BA593 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				DC299DC22C3EAB0E004BA593 /* PlaceService.swift */,
+			);
+			path = Service;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -148,9 +178,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				23A09BD52C3D773C001DD96C /* ContentView.swift in Sources */,
+				DC299DC32C3EAB0E004BA593 /* PlaceService.swift in Sources */,
 				23A09BE32C3D8AB7001DD96C /* MapView.swift in Sources */,
 				23A09BE52C3E4165001DD96C /* LocationDetailsView.swift in Sources */,
 				23A09BD32C3D773C001DD96C /* WeatherMapApp.swift in Sources */,
+				DC299DC02C3EAA04004BA593 /* Place.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
