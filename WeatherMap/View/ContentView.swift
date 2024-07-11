@@ -10,6 +10,8 @@ import WeatherKit
 import CoreLocation
 import MapKit
 
+//test
+
 enum TransportType: String, Hashable {
     case automobile
     case walking
