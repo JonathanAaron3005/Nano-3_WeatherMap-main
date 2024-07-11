@@ -67,12 +67,12 @@
 		23A09BD12C3D773C001DD96C /* WeatherMap */ = {
 			isa = PBXGroup;
 			children = (
+				23A09BD22C3D773C001DD96C /* WeatherMapApp.swift */,
 				DC299DC12C3EAB01004BA593 /* Service */,
 				DC299DBE2C3EA9E3004BA593 /* Model */,
 				DC299DBD2C3EA9D8004BA593 /* View */,
 				23A09BE12C3D881D001DD96C /* Info.plist */,
 				23A09BE02C3D774F001DD96C /* WeatherMap.entitlements */,
-				23A09BD22C3D773C001DD96C /* WeatherMapApp.swift */,
 				23A09BD62C3D773D001DD96C /* Assets.xcassets */,
 				23A09BD82C3D773D001DD96C /* Preview Content */,
 				23A09BE22C3D8AB7001DD96C /* MapView.swift */,
