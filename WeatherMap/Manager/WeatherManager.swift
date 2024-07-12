@@ -52,6 +52,7 @@ extension Array where Element == HourWeather {
     func closest(to date: Date) -> HourWeather? {
         return self.min(by: { abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date)) })
     }
+
 }
 
 
