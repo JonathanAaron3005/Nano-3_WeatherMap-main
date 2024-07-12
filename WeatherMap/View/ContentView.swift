@@ -17,52 +17,6 @@ enum TransportType: String, Hashable {
     }
 }
 
-class GetLocFromCoordinate: NSObject, ObservableObject, CLLocationManagerDelegate {
-    private let manager = CLLocationManager()
-    @Published var location: CLLocation?
-    @Published var locationName: String = "Unknown"
-    
-    override init() {
-        super.init()
-        manager.delegate = self
-        manager.requestWhenInUseAuthorization()
-        manager.startUpdatingLocation()
-    }
-    
-    func getLocationName(from location: CLLocation) {
-        let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
-            guard error == nil else {
-                self.locationName = "\(location.coordinate.latitude), \(location.coordinate.longitude)"
-                return
-            }
-            
-            if let placemark = placemarks?.first {
-                self.locationName = [
-                    placemark.name,
-                    placemark.locality,
-                    placemark.administrativeArea,
-                    placemark.country
-                ].compactMap { $0 }.joined(separator: ", ")
-            } else {
-                self.locationName = "\(location.coordinate.latitude), \(location.coordinate.longitude)"
-            }
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
-            self.location = location
-            getLocationName(from: location)
-            manager.stopUpdatingLocation()
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Failed to find user's location: \(error.localizedDescription)")
-    }
-}
-
 struct ContentView: View {
     @State private var cameraPosition: MapCameraPosition = .region(.userRegion)
     @State private var searchText = ""
@@ -77,7 +31,7 @@ struct ContentView: View {
     @ObservedObject private var locationManager = LocationManager()
     @State private var additionalSearchTexts = [String]()
     @State private var searchTextIndex: Int?
-    @State private var selectedResult: [MKMapItem]?
+    @State private var selectedResult = [MKMapItem]()
     
     var body: some View {
         VStack {
@@ -96,18 +50,13 @@ struct ContentView: View {
                     }
                 }
                 ForEach(results, id: \.self) { item in
-                    if routeDisplaying {
-                        if item == routeDestination {
-                            let placemark = item.placemark
-                            Marker(placemark.name ?? "", coordinate: placemark.coordinate)
-                        } else {
-                            let placemark = item.placemark
-                            Marker(placemark.name ?? "", coordinate: placemark.coordinate)
-                        }
-                    } else {
-                        let placemark = item.placemark
-                        Marker(placemark.name ?? "", coordinate: placemark.coordinate)
-                    }
+                    let placemark = item.placemark
+                    Marker(placemark.name ?? "", coordinate: placemark.coordinate)
+                }
+                
+                ForEach(selectedResult, id: \.self) { item in
+                    let placemark = item.placemark
+                    Marker(placemark.name ?? "", coordinate: placemark.coordinate)
                 }
                 
                 if let route {
@@ -203,17 +152,12 @@ struct ContentView: View {
 
 extension ContentView {
     func searchPlaces(searchText: String) async {
-        print(searchText)
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = searchText
         request.region = .userRegion
         
         let results = try? await MKLocalSearch(request: request).start()
         self.results += results?.mapItems ?? []
-        print("total map items: \(results?.mapItems.count)")
-        for mapItem in results?.mapItems ?? [] {
-            print(mapItem.placemark.title)
-        }
     }
     
     func searchAndAddPlaces(index: Int) {
@@ -223,10 +167,10 @@ extension ContentView {
         }
     }
     
-    func fetchRoute() {
+    func fetchRoute(startDestination: MKMapItem) {
         if let mapSelection {
             let request = MKDirections.Request()
-            request.source = MKMapItem(placemark: .init(coordinate: .userLocation))
+            request.source = startDestination
             request.destination = mapSelection
             request.transportType = transportType.mkTransportType
             
@@ -247,8 +191,8 @@ extension ContentView {
                     }
                 }
                 
-                routeDestination = mapSelection
-                
+                self.selectedResult.append(mapSelection)
+                self.results = []
                 withAnimation(.snappy) {
                     routeDisplaying = true
                     showDetails = false

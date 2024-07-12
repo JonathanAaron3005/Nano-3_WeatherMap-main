@@ -25,6 +25,7 @@
 		DC982A3E2C44E57F0016936B /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC982A3D2C44E57F0016936B /* MapView.swift */; };
 		DC982A402C44E5C20016936B /* SearchFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC982A3F2C44E5C20016936B /* SearchFormView.swift */; };
 		DC982A422C44E5EE0016936B /* TransportTypePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC982A412C44E5EE0016936B /* TransportTypePicker.swift */; };
+
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 		DC982A3D2C44E57F0016936B /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		DC982A3F2C44E5C20016936B /* SearchFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFormView.swift; sourceTree = "<group>"; };
 		DC982A412C44E5EE0016936B /* TransportTypePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportTypePicker.swift; sourceTree = "<group>"; };
+
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +155,7 @@
 			path = Manager;
 			sourceTree = "<group>";
 		};
+
 		DC982A3B2C44E5330016936B /* Presenter */ = {
 			isa = PBXGroup;
 			children = (
@@ -175,6 +178,7 @@
 			path = Component;
 			sourceTree = "<group>";
 		};
+
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
