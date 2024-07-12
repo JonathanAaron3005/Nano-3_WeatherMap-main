@@ -60,6 +60,7 @@ struct ContentView: View {
     @State private var route: MKRoute?
     @State private var routeDestination: MKMapItem?
     @State private var transportType: TransportType = .automobile
+    @State private var weatherBadges = [(index: Int, time: String, icon: String)]()
     
     var body: some View {
         VStack {
@@ -104,6 +105,12 @@ struct ContentView: View {
                 if let route {
                     MapPolyline(route.polyline)
                         .stroke(.blue, lineWidth: 6)
+                }
+                
+                ForEach(weatherBadges, id: \.index) { badge in
+                    Annotation("Weather Badge", coordinate: route!.steps[badge.index].polyline.coordinate) {
+                        WeatherBadge(time: .constant(badge.time), icon: .constant(badge.icon))
+                    }
                 }
             }
             .overlay(alignment: .top) {
@@ -164,13 +171,16 @@ extension ContentView {
                 if let route {
                     let eta = route.expectedTravelTime
                     print("Estimated Travel Time: \(eta / 60) minutes")
+                    let indices = calculateWeatherBadgeIndices(totalTime: Int(eta)/60, totalSteps: route.steps.count)
+                    weatherBadges = []
                     
-                    for step in route.steps {
-                        let coordinate = step.polyline.coordinate
+                    for index in indices {
+                        let coordinate = route.steps[index].polyline.coordinate
                         print("longitude: \(coordinate.longitude), latitude: \(coordinate.latitude)")
                         
                         let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-                        await fetchWeatherData(for: location)
+                        let (time, icon) = await fetchWeatherData(for: location)
+                        weatherBadges.append((index: index, time: time, icon: icon))
                     }
                 }
                 
@@ -187,21 +197,53 @@ extension ContentView {
             }
         }
     }
+    
+    func calculateWeatherBadgeIndices(totalTime: Int, totalSteps: Int) -> [Int] {
+        var indices = [0]
+        
+        if totalSteps > 2 {
+            indices.append(Int(ceil(Double(totalSteps) / 2.0)))
+        }
+        
+        indices.append(totalSteps - 1)
+        
+        return indices
+    }
 }
 
-func fetchWeatherData(for location: CLLocation) async {
+func fetchWeatherData(for location: CLLocation) async -> (time: String, icon: String) {
     do {
         let weatherService = WeatherService.shared
         let weather = try await weatherService.weather(for: location)
         
         if let hourlyForecast = weather.hourlyForecast.first {
             let precipitationChance = hourlyForecast.precipitationChance
+            let time = DateFormatter.localizedString(from: hourlyForecast.date, dateStyle: .none, timeStyle: .short)
+            let icon = getWeatherIcon(precipitationChance: precipitationChance)
             print("Precipitation chance at \(location.coordinate.latitude), \(location.coordinate.longitude): \(precipitationChance * 100)%")
+            return (time: time, icon: icon)
         } else {
             print("No precipitation data available at \(location.coordinate.latitude), \(location.coordinate.longitude)")
+            return (time: "", icon: "questionmark")
         }
     } catch {
         print("Failed to fetch weather data: \(error.localizedDescription)")
+        return (time: "", icon: "questionmark")
+    }
+}
+
+func getWeatherIcon(precipitationChance: Double) -> String {
+    switch precipitationChance {
+    case 0..<0.2:
+        return "sun.max.fill"
+    case 0.2..<0.5:
+        return "cloud.sun.fill"
+    case 0.5..<0.8:
+        return "cloud.rain.fill"
+    case 0.8...1:
+        return "cloud.heavyrain.fill"
+    default:
+        return "questionmark"
     }
 }
 
@@ -217,6 +259,47 @@ extension MKCoordinateRegion {
     }
 }
 
+struct Triangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.closeSubpath()
+        return path
+    }
+}
+
+struct WeatherBadge: View {
+    @Binding var time: String
+    @Binding var icon: String
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(time)
+                .font(.subheadline)
+            Image(systemName: icon)
+                .font(.title)
+                .symbolRenderingMode(.monochrome)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 25))
+        .shadow(radius: 8)
+        Triangle()
+            .fill(.gray)
+            .frame(width: 20, height: 10)
+            .offset(y: -8)
+            .overlay(
+                Triangle()
+                    .stroke(Color.black, lineWidth: 1)
+                    .frame(width: 20, height: 10)
+                    .offset(y: -8)
+            )
+    }
+}
+
 #Preview {
-    ContentView()
+    WeatherBadge(time: .constant("16.00"), icon: .constant("cloud.drizzle.fill"))
 }
