@@ -20,18 +20,19 @@ class WeatherManager {
     }()
     
     func currentWeather(for location: CLLocation) async -> CurrentWeather? {
-        let currentWeather = await Task.detached(priority: .userInitiated) {
-            let forecast = try? await self.service.weather(
-                for: location,
-                // ganti ke minute hour atau yg lain
-                including: .current
-            )
-            return forecast
-        }.value
-        return currentWeather
-    }
+            let currentWeather = await Task.detached(priority: .userInitiated) {
+                let forecast = try? await self.service.weather(
+                    for: location,
+                    // ganti ke minute hour atau yg lain
+                    including: .current
+                )
+                return forecast
+            }.value
+            return currentWeather
+        }
     
-    func weather(for location: CLLocation, at date: Date) async -> HourWeather? {
+    
+    func getWeather(for location: CLLocation, at date: Date) async -> HourWeather? {
         let hourlyWeather = await Task.detached(priority: .userInitiated) {
             let forecast = try? await self.service.weather(for: location, including: .hourly)
             return forecast
