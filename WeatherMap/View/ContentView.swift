@@ -26,7 +26,7 @@ enum TransportType: String, Hashable {
     }
 }
 
-class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+class GetLocFromCoordinate: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     @Published var location: CLLocation?
     
