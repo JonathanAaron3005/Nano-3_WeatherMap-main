@@ -22,6 +22,7 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var results = [MKMapItem]()
     @State private var mapSelection: MKMapItem?
+    @State private var lastMapSelection: MKMapItem?
     @State private var showDetails = false
     @State private var getDirections = false
     @State private var routeDisplaying = false
@@ -120,7 +121,7 @@ struct ContentView: View {
                     }
                     .pickerStyle(SegmentedPickerStyle())
                     .padding()
-                    .onChange(of: transportType) { _ in
+                    .onChange(of: transportType) { _, newValue in
                         if routeDisplaying {
                             fetchRoute()
                         }
@@ -128,9 +129,7 @@ struct ContentView: View {
                 }
             }
             .onChange(of: getDirections) { _, newValue in
-                if newValue {
                     fetchRoute()
-                }
             }
             .onChange(of: mapSelection) { _, newValue in
                 showDetails = newValue != nil
@@ -167,12 +166,19 @@ extension ContentView {
         }
     }
     
-    func fetchRoute(startDestination: MKMapItem) {
+    func fetchRoute() {
         if let mapSelection {
+            
             let request = MKDirections.Request()
-            request.source = startDestination
+            if lastMapSelection == nil {
+                request.source = MKMapItem(placemark: .init(coordinate: .userLocation))
+            } else {
+                request.source = lastMapSelection
+            }
             request.destination = mapSelection
             request.transportType = transportType.mkTransportType
+            
+            lastMapSelection = mapSelection
             
             Task {
                 let result = try? await MKDirections(request: request).calculate()
