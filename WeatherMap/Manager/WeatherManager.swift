@@ -20,6 +20,7 @@ class WeatherManager {
     }()
     
     func currentWeather(for location: CLLocation) async -> CurrentWeather? {
+
             let currentWeather = await Task.detached(priority: .userInitiated) {
                 let forecast = try? await self.service.weather(
                     for: location,
