@@ -19,20 +19,27 @@ enum TransportType: String, Hashable {
 
 struct ContentView: View {
     @State private var cameraPosition: MapCameraPosition = .region(.userRegion)
+    
     @State private var searchText = ""
-    @State private var results = [MKMapItem]()
+    @State private var searchTextIndex: Int?
+    @State private var additionalSearchTexts = [String]()
+    
     @State private var mapSelection: MKMapItem?
     @State private var lastMapSelection: MKMapItem?
+    
     @State private var showDetails = false
+    
     @State private var getDirections = false
     @State private var routeDisplaying = false
-    @State private var route: MKRoute?
+    @State private var routes = [MKRoute]()
     @State private var routeDestination: MKMapItem?
+    
     @State private var transportType: TransportType = .automobile
+    
     @ObservedObject private var locationManager = LocationManager()
-    @State private var additionalSearchTexts = [String]()
-    @State private var searchTextIndex: Int?
+   
     @State private var selectedResult = [MKMapItem]()
+    @State private var results = [MKMapItem]()
     
     var body: some View {
         VStack {
@@ -60,9 +67,11 @@ struct ContentView: View {
                     Marker(placemark.name ?? "", coordinate: placemark.coordinate)
                 }
                 
-                if let route {
-                    MapPolyline(route.polyline)
-                        .stroke(.blue, lineWidth: 6)
+                if let routes {
+                    ForEach(routes) { route in
+                        MapPolyline(route.polyline)
+                            .stroke(.blue, lineWidth: 6)
+                    }
                 }
             }
             .overlay(alignment: .top) {
@@ -129,7 +138,7 @@ struct ContentView: View {
                 }
             }
             .onChange(of: getDirections) { _, newValue in
-                    fetchRoute()
+                fetchRoute()
             }
             .onChange(of: mapSelection) { _, newValue in
                 showDetails = newValue != nil
@@ -167,49 +176,55 @@ extension ContentView {
     }
     
     func fetchRoute() {
-        if let mapSelection {
-            
-            let request = MKDirections.Request()
-            if lastMapSelection == nil {
-                request.source = MKMapItem(placemark: .init(coordinate: .userLocation))
-            } else {
-                request.source = lastMapSelection
-            }
-            request.destination = mapSelection
-            request.transportType = transportType.mkTransportType
-            
-            lastMapSelection = mapSelection
-            
-            Task {
-                let result = try? await MKDirections(request: request).calculate()
-                route = result?.routes.first
+        guard let mapSelection = mapSelection else { return }
+        
+        selectedResult.append(mapSelection)
+        
+        var stops = selectedResult.map { $0 }
+        stops.insert(MKMapItem(placemark: .init(coordinate: .userLocation)), at: 0)
+        for stop in stops {
+            print(stop)
+        }
+        
+        Task {
+            for i in 0..<stops.count - 1 {
+                let request = MKDirections.Request()
+                request.source = stops[i]
+                request.destination = stops[i + 1]
+                request.transportType = transportType.mkTransportType
                 
-                if let route {
-                    let eta = route.expectedTravelTime
-                    print("Estimated Travel Time: \(eta / 60) minutes")
-                    
+                let result = try? await MKDirections(request: request).calculate()
+                if let route = result?.routes.first {
+                    routes.append(route)
+                
                     for step in route.steps {
                         let coordinate = step.polyline.coordinate
-                        print("longitude: \(coordinate.longitude), latitude: \(coordinate.latitude)")
-                        
                         let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
                         await fetchWeatherData(for: location)
                     }
                 }
+            }
+            
+            if let firstRoute = routes.first {
+                let eta = firstRoute.expectedTravelTime
+                print("Estimated Travel Time: \(eta / 60) minutes")
+            }
+            
+            self.results = []
+            self.selectedResult = stops
+            
+            withAnimation(.snappy) {
+                routeDisplaying = true
+                showDetails = false
                 
-                self.selectedResult.append(mapSelection)
-                self.results = []
-                withAnimation(.snappy) {
-                    routeDisplaying = true
-                    showDetails = false
-                    
-                    if let rect = route?.polyline.boundingMapRect, routeDisplaying {
-                        cameraPosition = .rect(rect)
-                    }
+                print(routes.first?.polyline)
+                if let rect = routes.first?.polyline.boundingMapRect, routeDisplaying {
+                    cameraPosition = .rect(rect)
                 }
             }
         }
     }
+
 }
 
 func fetchWeatherData(for location: CLLocation) async {
