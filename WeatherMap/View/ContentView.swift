@@ -1,16 +1,7 @@
-//
-//  ContentView.swift
-//  WeatherMap
-//
-//  Created by hendra on 09/07/24.
-//
-
 import SwiftUI
 import WeatherKit
 import CoreLocation
 import MapKit
-
-//test
 
 enum TransportType: String, Hashable {
     case automobile
@@ -29,6 +20,7 @@ enum TransportType: String, Hashable {
 class GetLocFromCoordinate: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     @Published var location: CLLocation?
+    @Published var locationName: String = "Unknown"
     
     override init() {
         super.init()
@@ -37,9 +29,31 @@ class GetLocFromCoordinate: NSObject, ObservableObject, CLLocationManagerDelegat
         manager.startUpdatingLocation()
     }
     
+    func getLocationName(from location: CLLocation) {
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
+            guard error == nil else {
+                self.locationName = "\(location.coordinate.latitude), \(location.coordinate.longitude)"
+                return
+            }
+            
+            if let placemark = placemarks?.first {
+                self.locationName = [
+                    placemark.name,
+                    placemark.locality,
+                    placemark.administrativeArea,
+                    placemark.country
+                ].compactMap { $0 }.joined(separator: ", ")
+            } else {
+                self.locationName = "\(location.coordinate.latitude), \(location.coordinate.longitude)"
+            }
+        }
+    }
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
             self.location = location
+            getLocationName(from: location)
             manager.stopUpdatingLocation()
         }
     }
@@ -60,21 +74,13 @@ struct ContentView: View {
     @State private var route: MKRoute?
     @State private var routeDestination: MKMapItem?
     @State private var transportType: TransportType = .automobile
+    @ObservedObject private var locationManager = LocationManager()
+    @State private var additionalSearchTexts = [String]()
+    @State private var searchTextIndex: Int?
+    @State private var selectedResult: [MKMapItem]?
     
     var body: some View {
         VStack {
-            Picker("Transport Type", selection: $transportType) {
-                Text("Automobile").tag(TransportType.automobile)
-                Text("Walking").tag(TransportType.walking)
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            .padding()
-            .onChange(of: transportType) { newValue in
-                if routeDisplaying {
-                    fetchRoute()
-                }
-            }
-            
             Map(position: $cameraPosition, selection: $mapSelection) {
                 Annotation("My Location", coordinate: .userLocation) {
                     ZStack {
@@ -94,6 +100,9 @@ struct ContentView: View {
                         if item == routeDestination {
                             let placemark = item.placemark
                             Marker(placemark.name ?? "", coordinate: placemark.coordinate)
+                        } else {
+                            let placemark = item.placemark
+                            Marker(placemark.name ?? "", coordinate: placemark.coordinate)
                         }
                     } else {
                         let placemark = item.placemark
@@ -107,22 +116,74 @@ struct ContentView: View {
                 }
             }
             .overlay(alignment: .top) {
-                TextField("Search for a location...", text: $searchText)
-                    .font(.subheadline)
-                    .padding(12)
+                VStack(spacing: -15) {
+                    Form {
+                        TextField("Current Location", text: $locationManager.locationName)
+                            .font(.subheadline)
+                            .background(Color.clear)
+                            .onSubmit {
+                                
+                            }
+                        
+                        TextField("Search for a location...", text: $searchText)
+                            .font(.subheadline)
+                            .background(Color.clear)
+                            .onSubmit {
+                                Task { await searchPlaces(searchText: self.searchText) }
+                            }
+                        
+                        ForEach(0..<additionalSearchTexts.count, id: \.self) { index in
+                            TextField("Search for a location...", text: Binding(
+                                get: { additionalSearchTexts[index] },
+                                set: { newValue in
+                                    additionalSearchTexts[index] = newValue
+                                    searchTextIndex = index
+                                }
+                            ))
+                            .font(.subheadline)
+                            .background(Color.clear)
+                            .onSubmit {
+                                if let index = searchTextIndex {
+                                    searchAndAddPlaces(index: index)
+                                }
+                            }
+                        }
+                        Button(action: {
+                            additionalSearchTexts.append("")
+                        }) {
+                            Text("Add Stop")
+                                .font(.subheadline)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        }
+                    }
                     .background(.white)
+                    .cornerRadius(20)
+                    .frame(height: 200)
                     .padding()
                     .shadow(radius: 10)
+                    
+                    Picker("Transport Type", selection: $transportType) {
+                        Text("Automobile").tag(TransportType.automobile)
+                        Text("Walking").tag(TransportType.walking)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding()
+                    .onChange(of: transportType) { _ in
+                        if routeDisplaying {
+                            fetchRoute()
+                        }
+                    }
+                }
             }
-            .onSubmit(of: .text) {
-                Task { await searchPlaces() }
-            }
-            .onChange(of: getDirections) { oldValue, newValue in
+            .onChange(of: getDirections) { _, newValue in
                 if newValue {
                     fetchRoute()
                 }
             }
-            .onChange(of: mapSelection) { oldValue, newValue in
+            .onChange(of: mapSelection) { _, newValue in
                 showDetails = newValue != nil
             }
             .sheet(isPresented: $showDetails) {
@@ -141,13 +202,25 @@ struct ContentView: View {
 }
 
 extension ContentView {
-    func searchPlaces() async {
+    func searchPlaces(searchText: String) async {
+        print(searchText)
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = searchText
         request.region = .userRegion
         
         let results = try? await MKLocalSearch(request: request).start()
-        self.results = results?.mapItems ?? []
+        self.results += results?.mapItems ?? []
+        print("total map items: \(results?.mapItems.count)")
+        for mapItem in results?.mapItems ?? [] {
+            print(mapItem.placemark.title)
+        }
+    }
+    
+    func searchAndAddPlaces(index: Int) {
+        let searchText = additionalSearchTexts[index]
+        Task {
+            await searchPlaces(searchText: searchText)
+        }
     }
     
     func fetchRoute() {
