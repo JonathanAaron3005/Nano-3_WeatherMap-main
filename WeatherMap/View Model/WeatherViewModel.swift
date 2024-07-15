@@ -12,6 +12,8 @@ import SwiftUI
 
 class WeatherViewModel: ObservableObject {
     @Published var weather: HourWeather?
+    @Published var precipitationProbability: Double?
+    @Published var precipitationAmount: Measurement<UnitLength>?
     @Published var errorMessage: String?
 
     private let weatherManager = WeatherManager()
@@ -23,6 +25,8 @@ class WeatherViewModel: ObservableObject {
                     DispatchQueue.main.async {
                         self.weather = fetchedWeather
                         self.errorMessage = nil
+                        self.precipitationProbability = fetchedWeather.precipitationChance
+                        self.precipitationAmount = fetchedWeather.precipitationAmount
                     }
                 } else {
                     DispatchQueue.main.async {
