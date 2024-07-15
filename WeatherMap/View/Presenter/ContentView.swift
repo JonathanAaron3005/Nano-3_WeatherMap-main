@@ -3,20 +3,6 @@ import WeatherKit
 import CoreLocation
 import MapKit
 
-enum TransportType: String, Hashable {
-    case automobile
-    case walking
-    
-    var mkTransportType: MKDirectionsTransportType {
-        switch self {
-        case .automobile:
-            return .automobile
-        case .walking:
-            return .walking
-        }
-    }
-}
-
 struct ContentView: View {
     @State private var cameraPosition: MapCameraPosition = .region(.userRegion)
     @State private var searchText = ""

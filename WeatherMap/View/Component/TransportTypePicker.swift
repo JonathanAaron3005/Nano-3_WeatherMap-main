@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct TransportTypePicker: View {
     @Binding var transportType: TransportType
@@ -23,6 +24,20 @@ struct TransportTypePicker: View {
             if routeDisplaying {
                 fetchRoute()
             }
+        }
+    }
+}
+
+enum TransportType: String, Hashable {
+    case automobile
+    case walking
+    
+    var mkTransportType: MKDirectionsTransportType {
+        switch self {
+        case .automobile:
+            return .automobile
+        case .walking:
+            return .walking
         }
     }
 }
