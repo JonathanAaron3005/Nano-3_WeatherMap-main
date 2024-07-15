@@ -10,57 +10,46 @@ import WeatherKit
 import CoreLocation
 
 struct TestView: View {
-    let weatherManager = WeatherManager.shared
-    @StateObject private var viewModel = LocationViewModel()
+    @StateObject private var viewModel = WeatherViewModel()
+    @State private var selectedDate = Date()
     
-   //  @State private var currentWeather: CurrentWeather?
-    @State private var hourWeather: HourWeather?
-    
-    @State private var isLoading = false
-    
-    let coordinate = CLLocation(latitude: 32.151533,  longitude: -80.760289)
-    let locationCoordinate = GetLocData()
-    
-    
+   //  -6.212922, 106.848723
+    // -2.556158, 140.692735
+    private let location = CLLocation(latitude: -2.556158, longitude: 140.692735) // Example location
+
     var body: some View {
         VStack {
-            Text("test")
-            if isLoading {
-                ProgressView()
-                Text("Fetching weather...")
-            } else {
-                if let hourWeather {
-                    if let errorMessage = viewModel.errorMessage {
-                            Text("Error: \(errorMessage)")
-                                .foregroundColor(.red)
-                        } else {
-                            Text("Place Name: \(viewModel.placeName)")
-                        }
-                    Text(Date.now.formatted(date: .abbreviated, time: .omitted))
-                    Text(Date.now.formatted(date: .omitted, time: .shortened))
-                    Image(systemName: hourWeather.symbolName)
-                    let temp = weatherManager.temperatureFormatter.string(from: hourWeather.temperature)
-                    Text(temp).font(.title2)
-                    Text(hourWeather.condition.description).font(.title3)
+            DatePicker("Select Date and Time", selection: $selectedDate)
+                .datePickerStyle(GraphicalDatePickerStyle())
+                .padding()
+
+            if let weather = viewModel.weather {
+                Text("Weather at \(selectedDate):")
+                Text("Temperature: \(weather.temperature.value, specifier: "%.1f") \(weather.temperature.unit.symbol)")
+                Text("Condition: \(weather.condition.description)")
+                
+                if let precipitationProbability = viewModel.precipitationProbability {
+                    Text("Precipitation Probability: \(Int(precipitationProbability * 100))%")
                 }
+                if let precipitationAmount = viewModel.precipitationAmount {
+                    Text("Precipitation Amount: \(precipitationAmount.converted(to: .millimeters).value) mm")
+                }
+            } else if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+            } else {
+                Text("Select a date and time to see the weather.")
             }
-        }
-        .padding()
-        .task {
-            isLoading = true
-            let specificDate = Calendar.current.date(bySettingHour: 15, minute: 0, second: 0, of: Date()) ?? Date()
-            Task.detached { @MainActor in
-                hourWeather = await weatherManager.weather(for: coordinate, at: specificDate)
-                
-                
-            }
-            isLoading = false
         }
         .onAppear {
-                    viewModel.fetchPlaceName(latitude: 32.151533, longitude: -80.760289)
-                }
+            viewModel.fetchWeather(for: location, at: selectedDate)
+        }
+        .onChange(of: selectedDate) { newDate in
+            viewModel.fetchWeather(for: location, at: newDate)
+        }
     }
 }
+
 
 #Preview {
     TestView()
