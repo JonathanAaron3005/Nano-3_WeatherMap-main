@@ -21,6 +21,9 @@
 		DC299DC02C3EAA04004BA593 /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC299DBF2C3EAA04004BA593 /* Place.swift */; };
 		DC299DC32C3EAB0E004BA593 /* PlaceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC299DC22C3EAB0E004BA593 /* PlaceService.swift */; };
 		DC982A3A2C4127550016936B /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC982A392C4127550016936B /* LocationManager.swift */; };
+		DC982A3E2C44E57F0016936B /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC982A3D2C44E57F0016936B /* MapView.swift */; };
+		DC982A402C44E5C20016936B /* SearchFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC982A3F2C44E5C20016936B /* SearchFormView.swift */; };
+		DC982A422C44E5EE0016936B /* TransportTypePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC982A412C44E5EE0016936B /* TransportTypePicker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +44,9 @@
 		DC299DBF2C3EAA04004BA593 /* Place.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
 		DC299DC22C3EAB0E004BA593 /* PlaceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceService.swift; sourceTree = "<group>"; };
 		DC982A392C4127550016936B /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		DC982A3D2C44E57F0016936B /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		DC982A3F2C44E5C20016936B /* SearchFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFormView.swift; sourceTree = "<group>"; };
+		DC982A412C44E5EE0016936B /* TransportTypePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportTypePicker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +110,8 @@
 				23A09BE82C3EE570001DD96C /* PlaceViewModel.swift */,
 				A3FAA7C32C40FA94002B9F8C /* TestView.swift */,
 				23A09BE22C3D8AB7001DD96C /* MapView.swift */,
+				DC982A3C2C44E5380016936B /* Component */,
+				DC982A3B2C44E5330016936B /* Presenter */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -132,6 +140,28 @@
 				DC982A392C4127550016936B /* LocationManager.swift */,
 			);
 			path = Manager;
+			sourceTree = "<group>";
+		};
+		DC982A3B2C44E5330016936B /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				23A09BE82C3EE570001DD96C /* PlaceViewModel.swift */,
+				23A09BE62C3EE55D001DD96C /* PlaceView.swift */,
+				23C6E8CE2C3EEA46008F0C51 /* AddPlaceView.swift */,
+				23A09BD42C3D773C001DD96C /* ContentView.swift */,
+				23A09BE42C3E4165001DD96C /* LocationDetailsView.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		DC982A3C2C44E5380016936B /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				DC982A3D2C44E57F0016936B /* MapView.swift */,
+				DC982A3F2C44E5C20016936B /* SearchFormView.swift */,
+				DC982A412C44E5EE0016936B /* TransportTypePicker.swift */,
+			);
+			path = Component;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -205,15 +235,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				23A09BE92C3EE570001DD96C /* PlaceViewModel.swift in Sources */,
+				DC982A422C44E5EE0016936B /* TransportTypePicker.swift in Sources */,
 				23A09BD52C3D773C001DD96C /* ContentView.swift in Sources */,
 				A3FAA7C42C40FA94002B9F8C /* TestView.swift in Sources */,
 				A3FAA7C82C411C4B002B9F8C /* GetLocData.swift in Sources */,
 				A3FAA7C22C3FFAFF002B9F8C /* WeatherManager.swift in Sources */,
+				DC982A402C44E5C20016936B /* SearchFormView.swift in Sources */,
 				DC982A3A2C4127550016936B /* LocationManager.swift in Sources */,
 				DC299DC32C3EAB0E004BA593 /* PlaceService.swift in Sources */,
 				23A09BE72C3EE55D001DD96C /* PlaceView.swift in Sources */,
 				23A09BE52C3E4165001DD96C /* LocationDetailsView.swift in Sources */,
 				23A09BD32C3D773C001DD96C /* WeatherMapApp.swift in Sources */,
+				DC982A3E2C44E57F0016936B /* MapView.swift in Sources */,
 				DC299DC02C3EAA04004BA593 /* Place.swift in Sources */,
 				23C6E8CF2C3EEA46008F0C51 /* AddPlaceView.swift in Sources */,
 			);
