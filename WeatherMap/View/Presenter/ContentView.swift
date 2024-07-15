@@ -25,8 +25,8 @@ struct ContentView: View {
             MapView(cameraPosition: $cameraPosition, mapSelection: $mapSelection, results: $results, routes: $routes, selectedResult: $selectedResult, routeDisplaying: $routeDisplaying)
                 .overlay(alignment: .top) {
                     VStack(spacing: -15) {
-                        SearchFormView(searchText: $searchText, additionalSearchTexts: $additionalSearchTexts, searchTextIndex: $searchTextIndex, locationManager: locationManager, searchPlaces: searchPlaces)
-                        TransportTypePicker(transportType: $transportType, routeDisplaying: $routeDisplaying, fetchRoute: fetchRoute)
+//                        SearchFormView(searchText: $searchText, additionalSearchTexts: $additionalSearchTexts, searchTextIndex: $searchTextIndex, locationManager: locationManager, searchPlaces: searchPlaces)
+                        TransportTypePicker(transportType: $transportType, routeDisplaying: $routeDisplaying, routes: $routes, fetchRoute: fetchRoute)
                     }
                 }
                 .onChange(of: getDirections) { _, newValue in
@@ -65,12 +65,10 @@ struct ContentView: View {
         
         var stops = selectedResult.map { $0 }
         stops.insert(MKMapItem(placemark: .init(coordinate: .userLocation)), at: 0)
-        for stop in stops {
-            print(stop)
-        }
         
         Task {
             for i in 0..<stops.count - 1 {
+                print(i)
                 let request = MKDirections.Request()
                 request.source = stops[i]
                 request.destination = stops[i + 1]
@@ -80,17 +78,15 @@ struct ContentView: View {
                 if let route = result?.routes.first {
                     routes.append(route)
                     
+                    let eta = route.expectedTravelTime
+                    print("Estimated Travel Time: \(eta / 60) minutes")
+                    
                     for step in route.steps {
                         let coordinate = step.polyline.coordinate
                         let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
                         await fetchWeatherData(for: location)
                     }
                 }
-            }
-            
-            if let firstRoute = routes.first {
-                let eta = firstRoute.expectedTravelTime
-                print("Estimated Travel Time: \(eta / 60) minutes")
             }
             
             self.results = []

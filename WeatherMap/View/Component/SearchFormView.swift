@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct SearchFormView: View {
-    @Binding var searchText: String
-    @Binding var additionalSearchTexts: [String]
-    @Binding var searchTextIndex: Int?
+    @State var searchText: String = ""
+    @State var additionalSearchTexts = [String]()
+    @State var searchTextIndex: Int?
     @ObservedObject var locationManager: LocationManager
-    var searchPlaces: (String) async -> Void
+    //var searchPlaces: (String) async -> Void
     
     var body: some View {
         Form {
@@ -24,7 +24,7 @@ struct SearchFormView: View {
                 .font(.subheadline)
                 .background(Color.clear)
                 .onSubmit {
-                    Task { await searchPlaces(searchText) }
+                    //Task { await searchPlaces(searchText) }
                 }
             
             ForEach(0..<additionalSearchTexts.count, id: \.self) { index in
@@ -54,18 +54,22 @@ struct SearchFormView: View {
                     .cornerRadius(8)
             }
         }
-        .background(.white)
-        .cornerRadius(20)
-        .frame(height: 200)
-        .padding()
-        .shadow(radius: 10)
+        .foregroundColor(.brown)
+        
+        .background(Color.pink)
+        .scrollContentBackground(.hidden)
+        .navigationBarTitle("Settings")
     }
     
     func searchAndAddPlaces(index: Int) {
         let searchText = additionalSearchTexts[index]
-        Task {
-            await searchPlaces(searchText)
-        }
+//        Task {
+//            await searchPlaces(searchText)
+//        }
     }
+}
+
+#Preview {
+    SearchFormView(searchText: "", searchTextIndex: 0, locationManager: LocationManager())
 }
 
