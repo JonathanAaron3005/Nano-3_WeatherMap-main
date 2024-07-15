@@ -11,6 +11,8 @@ import MapKit
 struct TransportTypePicker: View {
     @Binding var transportType: TransportType
     @Binding var routeDisplaying: Bool
+    @Binding var routes: [MKRoute]
+    
     var fetchRoute: () -> Void
     
     var body: some View {
@@ -22,6 +24,7 @@ struct TransportTypePicker: View {
         .padding()
         .onChange(of: transportType) { _, newValue in
             if routeDisplaying {
+                routes.removeAll()
                 fetchRoute()
             }
         }
