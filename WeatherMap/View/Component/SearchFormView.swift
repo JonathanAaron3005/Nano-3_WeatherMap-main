@@ -8,68 +8,86 @@
 import SwiftUI
 
 struct SearchFormView: View {
-    @State var searchText: String = ""
-    @State var additionalSearchTexts = [String]()
-    @State var searchTextIndex: Int?
+    @Binding var searchText: String
+    @Binding var additionalSearchTexts: [String]
+    @Binding var searchTextIndex: Int?
     @ObservedObject var locationManager: LocationManager
-    //var searchPlaces: (String) async -> Void
+    //    var searchPlaces: (String) async -> Void
     
     var body: some View {
-        Form {
-            TextField("Current Location", text: $locationManager.locationName)
-                .font(.subheadline)
-                .background(Color.clear)
-            
-            TextField("Search for a location...", text: $searchText)
-                .font(.subheadline)
-                .background(Color.clear)
-                .onSubmit {
-                    //Task { await searchPlaces(searchText) }
-                }
-            
-            ForEach(0..<additionalSearchTexts.count, id: \.self) { index in
-                TextField("Search for a location...", text: Binding(
-                    get: { additionalSearchTexts[index] },
-                    set: { newValue in
-                        additionalSearchTexts[index] = newValue
-                        searchTextIndex = index
+        ZStack {
+            RoundedRectangle(cornerSize: CGSize(width: 45, height: 45))
+                .fill(.clear)
+                .background(.gray.opacity(0.25))
+                .cornerRadius(20)
+                .padding()
+            RoundedRectangle(cornerSize: CGSize(width: 45, height: 45))
+                .fill(.clear)
+                .frame(width: 320, height: 100)
+                .background(.gray.opacity(0.25))
+                .cornerRadius(20)
+                .padding()
+            VStack {
+                Form {
+                    TextField("Current Location", text: $locationManager.locationName)
+                        .font(.subheadline)
+                        .background(Color.clear)
+                        .padding(.vertical, 8)
+                    
+                    TextField("Search for a location...", text: $searchText)
+                        .font(.subheadline)
+                        .background(Color.clear)
+                        .padding(.vertical, 8)
+                        .onSubmit {
+                            //Task { await searchPlaces(searchText) }
+                        }
+                    
+                    ForEach(0..<additionalSearchTexts.count, id: \.self) { index in
+                        TextField("Search for a location...", text: Binding(
+                            get: { additionalSearchTexts[index] },
+                            set: { newValue in
+                                additionalSearchTexts[index] = newValue
+                                searchTextIndex = index
+                            }
+                        ))
+                        .font(.subheadline)
+                        .background(Color.clear)
+                        .onSubmit {
+                            if let index = searchTextIndex {
+                                searchAndAddPlaces(index: index)
+                            }
+                        }
                     }
-                ))
-                .font(.subheadline)
-                .background(Color.clear)
-                .onSubmit {
-                    if let index = searchTextIndex {
-                        searchAndAddPlaces(index: index)
-                    }
                 }
-            }
-            Button(action: {
-                additionalSearchTexts.append("")
-            }) {
-                Text("Add Stop")
-                    .font(.subheadline)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
+                .background(Color.clear)
+                .scrollContentBackground(.hidden)
+                .padding()
+                
+                Button(action: {
+                    additionalSearchTexts.append("")
+                }) {
+                    Text("Add Stop")
+                        .font(.subheadline)
+                        .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/, height: 30)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(30)
+                }
+                .offset(x: 100, y: -10)
             }
         }
-        .foregroundColor(.brown)
-        
-        .background(Color.pink)
-        .scrollContentBackground(.hidden)
-        .navigationBarTitle("Settings")
+        .frame(height: 200)
     }
     
     func searchAndAddPlaces(index: Int) {
         let searchText = additionalSearchTexts[index]
-//        Task {
-//            await searchPlaces(searchText)
-//        }
+        //        Task {
+        //            await searchPlaces(searchText)
+        //        }
     }
 }
 
 #Preview {
-    SearchFormView(searchText: "", searchTextIndex: 0, locationManager: LocationManager())
+    SearchFormView(searchText: .constant("tes"), additionalSearchTexts: .constant([]), searchTextIndex: .constant(1), locationManager: LocationManager())
 }
 

@@ -21,6 +21,7 @@
 		DC799D082C4509EC00B55E34 /* PlaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC799D052C4509EC00B55E34 /* PlaceView.swift */; };
 		DC799D092C4509EC00B55E34 /* PlaceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC799D062C4509EC00B55E34 /* PlaceViewModel.swift */; };
 		DC799D0A2C4509EC00B55E34 /* LocationDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC799D072C4509EC00B55E34 /* LocationDetailsView.swift */; };
+		DC799D0E2C453EE000B55E34 /* CustomPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC799D0D2C453EE000B55E34 /* CustomPicker.swift */; };
 		DC982A3A2C4127550016936B /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC982A392C4127550016936B /* LocationManager.swift */; };
 		DC982A3E2C44E57F0016936B /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC982A3D2C44E57F0016936B /* MapView.swift */; };
 		DC982A402C44E5C20016936B /* SearchFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC982A3F2C44E5C20016936B /* SearchFormView.swift */; };
@@ -46,6 +47,7 @@
 		DC799D052C4509EC00B55E34 /* PlaceView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaceView.swift; sourceTree = "<group>"; };
 		DC799D062C4509EC00B55E34 /* PlaceViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaceViewModel.swift; sourceTree = "<group>"; };
 		DC799D072C4509EC00B55E34 /* LocationDetailsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationDetailsView.swift; sourceTree = "<group>"; };
+		DC799D0D2C453EE000B55E34 /* CustomPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPicker.swift; sourceTree = "<group>"; };
 		DC982A392C4127550016936B /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		DC982A3D2C44E57F0016936B /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		DC982A3F2C44E5C20016936B /* SearchFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFormView.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				DC982A3D2C44E57F0016936B /* MapView.swift */,
 				DC982A3F2C44E5C20016936B /* SearchFormView.swift */,
 				DC982A412C44E5EE0016936B /* TransportTypePicker.swift */,
+				DC799D0D2C453EE000B55E34 /* CustomPicker.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -258,6 +261,7 @@
 				DC799D0A2C4509EC00B55E34 /* LocationDetailsView.swift in Sources */,
 				A3FAA7C82C411C4B002B9F8C /* GetLocData.swift in Sources */,
 				A3FAA7C22C3FFAFF002B9F8C /* WeatherManager.swift in Sources */,
+				DC799D0E2C453EE000B55E34 /* CustomPicker.swift in Sources */,
 				DC799D042C4509DB00B55E34 /* AddPlaceView.swift in Sources */,
 				DC982A402C44E5C20016936B /* SearchFormView.swift in Sources */,
 				DC982A3A2C4127550016936B /* LocationManager.swift in Sources */,
