@@ -41,7 +41,7 @@ struct CustomPicker: View {
                             .bold()
                         Image(systemName: "chevron.down")
                     }
-                    .font(.system(size: 13))
+                    .font(.system(size: 12))
                     .foregroundColor(.primary)
                     .padding()
                     .padding(.vertical, 2)

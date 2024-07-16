@@ -20,40 +20,38 @@ struct AddPlaceView: View {
     @State private var destinationLongitude: String = ""
     
     var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Title")) {
-                    TextField("Title", text: $title)
-                }
-                
-                Section(header: Text("Subtitle")) {
-                    TextField("Subtitle", text: $subtitle)
-                }
-                
-                Section(header: Text("Start Coordinate")) {
-                    TextField("Latitude", text: $startLatitude)
-                        .keyboardType(.decimalPad)
-                    TextField("Longitude", text: $startLongitude)
-                        .keyboardType(.decimalPad)
-                }
-                
-                Section(header: Text("Destination Coordinate")) {
-                    TextField("Latitude", text: $destinationLatitude)
-                        .keyboardType(.decimalPad)
-                    TextField("Longitude", text: $destinationLongitude)
-                        .keyboardType(.decimalPad)
-                }
-                
-                Button(action: addPlace) {
-                    Text("Add Place")
-                }
+        Form {
+            Section(header: Text("Title")) {
+                TextField("Title", text: $title)
             }
-            .navigationTitle("New Place")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        presentationMode.wrappedValue.dismiss()
-                    }
+            
+            Section(header: Text("Subtitle")) {
+                TextField("Subtitle", text: $subtitle)
+            }
+            
+            Section(header: Text("Start Coordinate")) {
+                TextField("Latitude", text: $startLatitude)
+                    .keyboardType(.decimalPad)
+                TextField("Longitude", text: $startLongitude)
+                    .keyboardType(.decimalPad)
+            }
+            
+            Section(header: Text("Destination Coordinate")) {
+                TextField("Latitude", text: $destinationLatitude)
+                    .keyboardType(.decimalPad)
+                TextField("Longitude", text: $destinationLongitude)
+                    .keyboardType(.decimalPad)
+            }
+            
+            Button(action: addPlace) {
+                Text("Add Place")
+            }
+        }
+        .navigationTitle("New Place")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Cancel") {
+                    presentationMode.wrappedValue.dismiss()
                 }
             }
         }
@@ -81,3 +79,5 @@ struct AddPlaceView_Previews: PreviewProvider {
         AddPlaceView(viewModel: PlaceViewModel())
     }
 }
+
+
