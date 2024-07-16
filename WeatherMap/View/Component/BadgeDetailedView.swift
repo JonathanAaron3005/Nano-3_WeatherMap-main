@@ -3,30 +3,38 @@ import SwiftUI
 struct BadgeDetailedView: View {
     var location: String = "McDonald, Edutown"
     var weatherDescription: String = "Heavy Rain"
-    var probability: Double = 0.35
+    var probability: Double = 1.0
     var precipitation: Int = 3
-    var temperature: Double = 26
+    var temperature: Double = 50
     var time: String = "09.45"
     
     @State private var isDetailVisible: Bool = true
     
-    func getTemperatureGradient() -> Gradient {
-        return Gradient(stops: [
-            .init(color: Color(red: 74/255, green: 157/255, blue: 255/255), location: 1.0),
-            .init(color: Color(red: 14/255, green: 222/255, blue: 22/255), location: 0.59),
-            .init(color: Color(red: 255/255, green: 3/255, blue: 3/255), location: 0.05)
-        ])
+    func getTemperatureGradient() -> AngularGradient {
+        return AngularGradient(
+            gradient: Gradient(stops: [
+                Gradient.Stop(color: Color(red: 0.29, green: 0.62, blue: 1), location: 0.22),
+                Gradient.Stop(color: Color(red: 0.05, green: 0.87, blue: 0.09), location: 0.59),
+                Gradient.Stop(color: Color(red: 1, green: 0.01, blue: 0.01), location: 0.90),
+            ]),
+            center: UnitPoint(x: 0.5, y: 0.53),
+            angle: Angle(degrees: -65)
+        )
     }
-    
-    func getProbabilityGradient() -> Gradient {
-        return Gradient(stops: [
-            .init(color: Color(red: 126/255, green: 201/255, blue: 255/255), location: 1.0),
-            .init(color: Color(red: 85/255, green: 161/255, blue: 216/255), location: 0.64),
-            .init(color: Color(red: 62/255, green: 120/255, blue: 227/255), location: 0.50),
-            .init(color: Color(red: 0/255, green: 10/255, blue: 255/255), location: 0.0)
-        ])
+
+    func getProbabilityGradient() -> AngularGradient {
+        return AngularGradient(
+            gradient: Gradient(stops: [
+                .init(color: Color(red: 0.39, green: 0.69, blue: 1), location: 0.00),
+                .init(color: Color(red: 0.33, green: 0.63, blue: 0.85), location: 0.33),
+                .init(color: Color(red: 0.24, green: 0.47, blue: 0.89), location: 0.66),
+                .init(color: Color(red: 0, green: 0.04, blue: 1), location: 1.00),
+            ]),
+            center: .center,
+            angle: .degrees(-65)
+        )
     }
-    
+
 
     func blackDotPosition(for value: Double) -> Angle {
         return Angle(degrees: 306 * value - 153)
@@ -149,7 +157,7 @@ struct BadgeDetailedView: View {
 
 struct GradientCircle: View {
     var value: Double
-    var gradient: Gradient
+    var gradient: AngularGradient
     var label: String
     var icon: String
     var title: String
@@ -169,7 +177,7 @@ struct GradientCircle: View {
                 
                 Circle()
                     .trim(from: 0, to: value * 0.85)
-                    .stroke(LinearGradient(gradient: gradient, startPoint: .leading, endPoint: .trailing), style: StrokeStyle(lineWidth: 10, lineCap: .round))
+                    .stroke(gradient, style: StrokeStyle(lineWidth: 10, lineCap: .round))
                     .rotationEffect(Angle(degrees: -243))
                     .frame(width: 80, height: 80)
                 
