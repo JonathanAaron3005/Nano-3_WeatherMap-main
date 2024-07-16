@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct BadgeDetailedView: View {
+    // MARK: - Properties
     var location: String = "McDonald, Edutown"
     var weatherDescription: String = "Heavy Rain"
     var probability: Double = 0.35
