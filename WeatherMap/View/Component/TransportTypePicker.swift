@@ -31,19 +31,6 @@ struct TransportTypePicker: View {
     }
 }
 
-enum TransportType: String, Hashable {
-    case automobile
-    case walking
-    
-    var mkTransportType: MKDirectionsTransportType {
-        switch self {
-        case .automobile:
-            return .automobile
-        case .walking:
-            return .walking
-        }
-    }
-}
 
 
 

@@ -19,6 +19,7 @@ struct ContentView: View {
     @ObservedObject private var locationManager = LocationManager()
     @State private var selectedResult = [MKMapItem]()
     @State private var results = [MKMapItem]()
+    @State private var date = Date()
     
     var body: some View {
         VStack {
@@ -26,7 +27,7 @@ struct ContentView: View {
                 .overlay(alignment: .top) {
                     VStack(spacing: -15) {
 //                        SearchFormView(searchText: $searchText, additionalSearchTexts: $additionalSearchTexts, searchTextIndex: $searchTextIndex, locationManager: locationManager, searchPlaces: searchPlaces)
-                        TransportTypePicker(transportType: $transportType, routeDisplaying: $routeDisplaying, routes: $routes, fetchRoute: fetchRoute)
+                        CustomPicker(date: $date, transportType: $transportType, routeDisplaying: $routeDisplaying, routes: $routes, fetchRoute: fetchRoute)
                     }
                 }
                 .onChange(of: getDirections) { _, newValue in
@@ -68,7 +69,6 @@ struct ContentView: View {
         
         Task {
             for i in 0..<stops.count - 1 {
-                print(i)
                 let request = MKDirections.Request()
                 request.source = stops[i]
                 request.destination = stops[i + 1]
