@@ -10,6 +10,7 @@ import WeatherKit
 import CoreLocation
 
 struct TestView: View {
+
     @StateObject private var viewModel = WeatherViewModel()
     @State private var selectedDate = Date()
     
@@ -49,7 +50,6 @@ struct TestView: View {
         }
     }
 }
-
 
 #Preview {
     TestView()
