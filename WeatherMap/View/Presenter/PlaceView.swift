@@ -14,34 +14,36 @@ struct PlaceView: View {
     @State private var showingAddPlaceView = false
     
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(viewModel.places) { place in
-                    VStack(alignment: .leading) {
-                        Text(place.title ?? "Unknown")
-                            .font(.headline)
-                        Text(place.subtitle ?? "No subtitle")
-                            .font(.subheadline)
-                    }
-                }
-                .onDelete(perform: viewModel.deletePlace)
-            }
-            .navigationTitle("Places")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingAddPlaceView = true
-                    }) {
-                        Image(systemName: "plus")
-                    }
+        List {
+            ForEach(viewModel.places) { place in
+                VStack(alignment: .leading) {
+                    Text(place.title ?? "Unknown")
+                        .font(.headline)
+                    Text(place.subtitle ?? "No subtitle")
+                        .font(.subheadline)
                 }
             }
-            .sheet(isPresented: $showingAddPlaceView) {
-                AddPlaceView(viewModel: viewModel)
+            .onDelete(perform: viewModel.deletePlace)
+        }
+        .navigationTitle("Places")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    showingAddPlaceView = true
+                }) {
+                    Image(systemName: "plus")
+                }
             }
         }
+        .sheet(isPresented: $showingAddPlaceView) {
+            AddPlaceView(viewModel: viewModel)
+        }
         .alert(item: $viewModel.error) { error in
-            Alert(title: Text("Error"), message: Text(error.message), dismissButton: .default(Text("OK")))
+            Alert(
+                title: Text("Error"),
+                message: Text(error.message),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
 }
