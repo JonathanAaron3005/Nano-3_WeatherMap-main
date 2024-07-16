@@ -128,6 +128,7 @@ struct CustomPicker: View {
                     )
                 }
             }
+                .padding(.top, 400)
         )
     }
     
