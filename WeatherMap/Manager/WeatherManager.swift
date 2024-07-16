@@ -31,7 +31,7 @@ class WeatherManager {
         return currentWeather
     }
     
-    func weather(for location: CLLocation, at date: Date) async -> HourWeather? {
+    func getWeather(for location: CLLocation, at date: Date) async -> HourWeather? {
         let hourlyWeather = await Task.detached(priority: .userInitiated) {
             let forecast = try? await self.service.weather(for: location, including: .hourly)
             return forecast
