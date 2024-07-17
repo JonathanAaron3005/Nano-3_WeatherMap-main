@@ -49,8 +49,8 @@ struct BadgeDetailedView: View {
                 Rectangle()
                     .fill(Color.gray)
                     .frame(width: 40, height: 6)
-                    .cornerRadius(3)
-                    .background(Color.white.frame(width: 44, height: 5).cornerRadius(4))
+                    .cornerRadius(0)
+                    .background(Color.gray.frame(width: 44, height: 5).cornerRadius(4))
                     .padding(.top, 5)
                     .offset(y: -14)
                 
@@ -61,7 +61,7 @@ struct BadgeDetailedView: View {
                         
                         Text(weatherDescription)
                             .font(.system(size: 16))
-                            .foregroundColor(.black)
+                            .foregroundColor(.primary)
                     }
                     
                     Spacer()
@@ -79,11 +79,11 @@ struct BadgeDetailedView: View {
                         HStack(spacing: 2) {
                             Image(systemName: "clock.fill")
                                 .font(.system(size: 18))
-                                .foregroundColor(.black)
+                                .foregroundColor(.primary)
                             
                             Text(time)
                                 .font(.system(size: 18))
-                                .foregroundColor(.black)
+                                .foregroundColor(.primary)
                         }
                     }
                 }
@@ -111,20 +111,20 @@ struct BadgeDetailedView: View {
                                     .frame(width: 90, height: 90)
                                 Text("\(precipitation)")
                                     .font(.system(size: 22, weight: .bold))
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.primary)
                                     .offset(y: 3)
                             }
                             Image(systemName: "drop.fill")
                                 .font(.system(size: 15))
-                                .foregroundColor(.black)
+                                .foregroundColor(.primary)
                                 .offset(y: -75)
                             Text("MM")
                                 .font(.caption)
-                                .foregroundColor(.black)
+                                .foregroundColor(.primary)
                                 .offset(y: -42)
                             Text("PRECIPITATION")
                                 .font(.caption)
-                                .foregroundColor(.black)
+                                .foregroundColor(.primary)
                                 .offset(y: -28)
                         }
                         
@@ -147,7 +147,7 @@ struct BadgeDetailedView: View {
                 Spacer()
             }
             .padding()
-            .background(Color.white)
+            .background(Color.lightGray)
             .cornerRadius(15)
             .shadow(radius: 5)
             .offset(y: 490)
@@ -184,28 +184,28 @@ struct GradientCircle: View {
                 
                 Text(label)
                     .font(.system(size: 22, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                     .offset(y: -3)
                 
                 Circle()
-                    .fill(Color.white)
+                    .fill(Color.lightGray)
                     .frame(width: 20, height: 20)
                     .offset(y: -40)
                     .rotationEffect(blackDotPosition(for: value))
                 
                 Circle()
-                    .fill(Color.black)
+                    .fill(Color.primary)
                     .frame(width: 12, height: 12)
                     .offset(y: -40)
                     .rotationEffect(blackDotPosition(for: value))
             }
             Image(systemName: icon)
                 .font(.system(size: 20))
-                .foregroundColor(.black)
+                .foregroundColor(.primary)
                 .offset(y: -26)
             Text(title)
                 .font(.caption)
-                .foregroundColor(.black)
+                .foregroundColor(.primary)
                 .offset(y: -20)
         }
     }
