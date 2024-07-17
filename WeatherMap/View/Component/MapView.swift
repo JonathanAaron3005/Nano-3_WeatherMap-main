@@ -16,6 +16,7 @@ struct MapView: View {
     @Binding var selectedResult: [MKMapItem]
     @Binding var routeDisplaying: Bool
     @Binding var myLocation: MKMapItem?
+    @Binding var weatherBadges: [(routeIndex: Int, stepIndex: Int, time: String, icon: String)]
     
     var body: some View {
         Map(position: $cameraPosition, selection: $mapSelection) {
@@ -34,13 +35,25 @@ struct MapView: View {
                     }
                 }
             }
-//            ForEach(results, id: \.self) { item in
-//                let placemark = item.placemark
-//                Marker(placemark.name ?? "", coordinate: placemark.coordinate)
-//            }
+            //            ForEach(results, id: \.self) { item in
+            //                let placemark = item.placemark
+            //                Marker(placemark.name ?? "", coordinate: placemark.coordinate)
+            //            }
             ForEach(selectedResult, id: \.self) { item in
                 let placemark = item.placemark
                 Marker(placemark.name ?? "", coordinate: placemark.coordinate)
+            }
+            
+            ForEach(routes.indices, id: \.self) { routeIndex in
+                let route = routes[routeIndex]
+                MapPolyline(route.polyline)
+                    .stroke(.blue, lineWidth: 6)
+                
+                ForEach(weatherBadges.filter { $0.routeIndex == routeIndex }, id: \.stepIndex) { badge in
+                    Annotation("Weather Badge", coordinate: route.steps[badge.stepIndex].polyline.coordinate) {
+                        WeatherBadge(time: .constant(badge.time), icon: .constant(badge.icon))
+                    }
+                }
             }
             
             ForEach(routes, id: \.self) { route in

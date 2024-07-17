@@ -11,7 +11,7 @@ struct CustomField: View {
     @Binding var text: String
     var body: some View {
         HStack {
-            Image(systemName: "arrowtriangle.up.fill")
+            Image(systemName: "mappin.circle.fill")
                 .foregroundStyle(.white)
                 .padding(.horizontal, 24)
                 .background(
@@ -26,7 +26,7 @@ struct CustomField: View {
                 .font(.title)
                 .padding()
         }
-        .frame(width: .infinity, height: 60)
+        .frame(height: 60)
         .background(RoundedRectangle(cornerSize: CGSize(width: 10, height: 10)).fill(.lightGray))
         .padding(.horizontal, 8)
     }

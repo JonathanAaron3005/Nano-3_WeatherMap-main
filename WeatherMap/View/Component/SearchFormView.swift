@@ -16,9 +16,9 @@ struct SearchFormView: View {
     @Binding var selectedResult: [MKMapItem]
     @Binding var myLocation: MKMapItem?
 //    var searchPlaces: (String) async -> Void
-    
-    @State private var showYourLocationSheet = false
+
     @State private var showAddDestinationSheet = false
+    @State private var showDraggableList = false
     
     @State var title = ""
     
@@ -31,75 +31,87 @@ struct SearchFormView: View {
     var fetchRoute: () -> Void
     
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerSize: CGSize(width: 10, height: 10))
-                .fill(.white)
-                .frame(height: 200)
-                .padding()
-                .padding(.bottom, 16)
-                .shadow(radius: 10)
+        ZStack(alignment: Alignment(horizontal: .center, vertical: .top)) {
+            if !showDraggableList {
+                RoundedRectangle(cornerSize: CGSize(width: 10, height: 10))
+                    .fill(.white)
+                    .frame(height: 200)
+                    .padding()
+                    .padding(.bottom, 16)
+                    .shadow(radius: 10)
+            }
             
             NavigationStack {
-                
-                VStack {
-                    VStack {
+                if !showDraggableList {
+                    VStack{
                         VStack {
-                            HStack {
-                                Image(systemName: "location.north.circle.fill")
-                                    .symbolRenderingMode(.multicolor)
-                                Text(myLocation?.name ?? "Your Location")
-                                Spacer()
-                            }
-                            .onTapGesture {
-                                title = "Your Location"
-                                showAddDestinationSheet.toggle()
-                            }
-                            Divider()
-                            HStack {
-                                Image(systemName: "mappin.circle.fill")
-                                    .symbolRenderingMode(.multicolor)
-                                Text(selectedResult.first?.placemark.name ?? "Add Destination")
-                                Spacer()
-                            }
-                            .onTapGesture {
-                                title = "Add Destination"
-                                showAddDestinationSheet.toggle()
-                            }
+                            VStack {
+                                HStack {
+                                    Image(systemName: "location.north.circle.fill")
+                                        .symbolRenderingMode(.multicolor)
+                                    Text(myLocation?.name ?? "Your Location")
+                                    Spacer()
+                                }
+                                .onTapGesture {
+                                    title = "Your Location"
+                                    showAddDestinationSheet.toggle()
+                                }
+                                Divider()
+                                HStack {
+                                    Image(systemName: "mappin.circle.fill")
+                                        .symbolRenderingMode(.multicolor)
+                                    Text(selectedResult.count > 1 ? selectedResult[1].placemark.name ?? "Add Destination" : "Add Destination")
+                                    Spacer()
+                                }
+                                .onTapGesture {
+                                    title = "Add Destination"
+                                    showAddDestinationSheet.toggle()
+                                }
 
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 24)
-                    }
-                    .overlay(
-                        HStack {
-                            Spacer()
-                            Button {
-                                //ACTION
-                            } label: {
-                                Text("Add Stop")
-                                    .padding(8)
                             }
-                            .background(
-                                Capsule()
-                                    .fill(.white)
-                            )
-                            .padding()
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 24)
                         }
-                    )
-                    .background(
-                        RoundedRectangle(cornerSize: CGSize(width: 10, height: 10))
-                            .fill(.lightGrayBackground)
-                    )
-                    .padding(.horizontal, 24)
-                    .padding(.top, 16)
-                    .sheet(isPresented: $showAddDestinationSheet) {
-                        DestinationSheet(title: $title, selectedResult: $selectedResult, fetchRoute: fetchRoute, myLocation: $myLocation)
-                            .presentationDragIndicator(.visible)
+                        .overlay(
+                            HStack {
+                                Spacer()
+                                Group {
+                                    if selectedResult.count >= 2 {
+                                        Button {
+                                            showDraggableList.toggle()
+                                        } label: {
+                                            Text("Add Stop")
+                                                .padding(8)
+                                        }
+                                        .background(
+                                            Capsule()
+                                                .fill(.white)
+                                        )
+                                        .padding()
+                                    }
+                                }
+                            }
+                        )
+                        .background(
+                            RoundedRectangle(cornerSize: CGSize(width: 10, height: 10))
+                                .fill(.lightGrayBackground)
+                        )
+                        .padding(.horizontal, 24)
+                        .padding(.top, 32)
+                        .sheet(isPresented: $showAddDestinationSheet) {
+                            DestinationSheet(title: $title, selectedResult: $selectedResult, fetchRoute: fetchRoute, myLocation: $myLocation)
+                                .presentationDragIndicator(.visible)
+                        }
+                        CustomPicker(date: $date, transportType: $transportType, routeDisplaying: $routeDisplaying, routes: $routes, fetchRoute: fetchRoute)
+                            .padding(.trailing, 15)
+                            .padding(.top, -28)
+                            .padding(.leading, -5)
                     }
-                    CustomPicker(date: $date, transportType: $transportType, routeDisplaying: $routeDisplaying, routes: $routes, fetchRoute: fetchRoute)
-                        .padding(.trailing, 15)
-                        .padding(.top, -28)
-                        .padding(.leading, -5)
+                }
+                if showDraggableList {
+                    DraggableList(selectedResult: $selectedResult) {
+                        showDraggableList = false
+                    }
                 }
             }
                 
