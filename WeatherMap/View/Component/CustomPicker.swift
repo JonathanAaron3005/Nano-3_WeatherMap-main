@@ -45,7 +45,7 @@ struct CustomPicker: View {
                     .foregroundColor(.primary)
                     .padding()
                     .padding(.vertical, 2)
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color(.lightGray))
                     .cornerRadius(10)
                 }
                 
@@ -81,11 +81,11 @@ struct CustomPicker: View {
                         Image(systemName: "chevron.down")
                     }
                     .padding()
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color(.lightGray))
                     .cornerRadius(11)
                 }
                 .frame(maxWidth: 50)
-                .tint(.black)
+                .tint(.primaryBlack)
             }
             .padding()
         }
@@ -105,13 +105,20 @@ struct CustomPicker: View {
                         .cornerRadius(10)
                         .padding()
                         
-                        Button("Done") {
+                        Button {
                             showingDatePicker.toggle()
+                        } label: {
+                            Text("Done")
+                                .padding(8)
+                                .foregroundStyle(.primaryBlue)
+                                .frame(width: 200, height: 50)
+                                .background(.buttonBackground)
+                                .cornerRadius(20)
                         }
-                        .padding(.top, 10)
+                        .padding(.bottom, 50)
                     }
                     .frame(width: 300, height: 300)
-                    .background(Color.white)
+                    .background(.lightGrayBackground)
                     .cornerRadius(10)
                     .shadow(radius: 20)
                     .overlay(

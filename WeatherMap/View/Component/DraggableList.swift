@@ -37,7 +37,7 @@ struct DraggableList: View {
                 searchRouteButton
             }
             .padding()
-            .background(Color.white)
+            .background(.lightGrayBackground)
             .cornerRadius(8)
             .shadow(radius: 10)
             .padding()

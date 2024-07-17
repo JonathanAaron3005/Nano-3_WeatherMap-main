@@ -34,7 +34,7 @@ struct SearchFormView: View {
         ZStack(alignment: Alignment(horizontal: .center, vertical: .top)) {
             if !showDraggableList {
                 RoundedRectangle(cornerSize: CGSize(width: 10, height: 10))
-                    .fill(.white)
+                    .fill(.lightGrayBackground)
                     .frame(height: 200)
                     .padding()
                     .padding(.bottom, 16)
@@ -60,7 +60,8 @@ struct SearchFormView: View {
                                 HStack {
                                     Image(systemName: "mappin.circle.fill")
                                         .symbolRenderingMode(.multicolor)
-                                    Text(selectedResult.count > 1 ? selectedResult[1].placemark.name ?? "Add Destination" : "Add Destination")
+                                    Text(selectedResult.count > 1 ? selectedResult[1].placemark.name ?? "Add Destination" : "Add Destination") + Text(selectedResult.count > 2 ? " +\(selectedResult.count-2)" : "")
+                                        .foregroundStyle(.orange)
                                     Spacer()
                                 }
                                 .onTapGesture {
@@ -82,10 +83,11 @@ struct SearchFormView: View {
                                         } label: {
                                             Text("Add Stop")
                                                 .padding(8)
+                                                .foregroundStyle(.primaryBlue)
                                         }
                                         .background(
                                             Capsule()
-                                                .fill(.white)
+                                                .fill(.buttonBackground)
                                         )
                                         .padding()
                                     }
@@ -94,7 +96,7 @@ struct SearchFormView: View {
                         )
                         .background(
                             RoundedRectangle(cornerSize: CGSize(width: 10, height: 10))
-                                .fill(.lightGrayBackground)
+                                .fill(.lightGray)
                         )
                         .padding(.horizontal, 24)
                         .padding(.top, 32)
