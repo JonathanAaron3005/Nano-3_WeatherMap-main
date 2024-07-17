@@ -51,7 +51,7 @@ struct MapView: View {
                 
                 ForEach(weatherBadges.filter { $0.routeIndex == routeIndex }, id: \.stepIndex) { badge in
                     Annotation("Weather Badge", coordinate: route.steps[badge.stepIndex].polyline.coordinate) {
-                        WeatherBadge(time: .constant(badge.time), icon: .constant(badge.icon))
+                        BadgeView(time: .constant(badge.time), icon: .constant(badge.icon))
                     }
                 }
             }
