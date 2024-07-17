@@ -6,65 +6,13 @@
 //
 
 import SwiftUI
-<<<<<<< HEAD
-=======
 import MapKit
->>>>>>> dev-merge
 
 struct SearchFormView: View {
     @Binding var searchText: String
     @Binding var additionalSearchTexts: [String]
     @Binding var searchTextIndex: Int?
     @ObservedObject var locationManager: LocationManager
-<<<<<<< HEAD
-    var searchPlaces: (String) async -> Void
-    
-    var body: some View {
-        Form {
-            TextField("Current Location", text: $locationManager.locationName)
-                .font(.subheadline)
-                .background(Color.clear)
-            
-            TextField("Search for a location...", text: $searchText)
-                .font(.subheadline)
-                .background(Color.clear)
-                .onSubmit {
-                    Task { await searchPlaces(searchText) }
-                }
-            
-            ForEach(0..<additionalSearchTexts.count, id: \.self) { index in
-                TextField("Search for a location...", text: Binding(
-                    get: { additionalSearchTexts[index] },
-                    set: { newValue in
-                        additionalSearchTexts[index] = newValue
-                        searchTextIndex = index
-                    }
-                ))
-                .font(.subheadline)
-                .background(Color.clear)
-                .onSubmit {
-                    if let index = searchTextIndex {
-                        searchAndAddPlaces(index: index)
-                    }
-                }
-            }
-            Button(action: {
-                additionalSearchTexts.append("")
-            }) {
-                Text("Add Stop")
-                    .font(.subheadline)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-            }
-        }
-        .background(.white)
-        .cornerRadius(20)
-        .frame(height: 200)
-        .padding()
-        .shadow(radius: 10)
-=======
     @Binding var selectedResult: [MKMapItem]
     @Binding var myLocation: MKMapItem?
 //    var searchPlaces: (String) async -> Void
@@ -161,10 +109,13 @@ struct SearchFormView: View {
                     }
                 }
                 if showDraggableList {
-                    DraggableList(selectedResult: $selectedResult) {
+                    DraggableList(selectedResult: $selectedResult, myLocation: $myLocation) {
                         showDraggableList = false
+                    } fetchRoute: {
+                        fetchRoute()
                     }
                 }
+
             }
                 
         }
@@ -172,14 +123,14 @@ struct SearchFormView: View {
 //            TextField("Current Location", text: $locationManager.locationName)
 //                .font(.subheadline)
 //                .background(Color.clear)
-//            
+//
 //            TextField("Search for a location...", text: $searchText)
 //                .font(.subheadline)
 //                .background(Color.clear)
 ////                .onSubmit {
 ////                    Task { await searchPlaces(searchText) }
 ////                }
-//            
+//
 //            ForEach(0..<additionalSearchTexts.count, id: \.self) { index in
 //                TextField("Search for a location...", text: Binding(
 //                    get: { additionalSearchTexts[index] },
@@ -212,26 +163,12 @@ struct SearchFormView: View {
 //        .frame(height: 200)
 //        .padding()
 //        .shadow(radius: 10)
->>>>>>> dev-merge
     }
     
     func searchAndAddPlaces(index: Int) {
         let searchText = additionalSearchTexts[index]
         Task {
-<<<<<<< HEAD
-            await searchPlaces(searchText)
-=======
 //            await searchPlaces(searchText)
->>>>>>> dev-merge
         }
     }
 }
-
-<<<<<<< HEAD
-=======
-#Preview {
-    SearchFormView(searchText: .constant("tes"), additionalSearchTexts: .constant(["tes"]), searchTextIndex: .constant(1), locationManager: LocationManager(), selectedResult: .constant([MKMapItem()]), myLocation: .constant(MKMapItem()), date: .constant(Date()), transportType: .constant(.automobile), routeDisplaying: .constant(false), routes: .constant([MKRoute]())) {
-        print("tes")
-    }
-}
->>>>>>> dev-merge

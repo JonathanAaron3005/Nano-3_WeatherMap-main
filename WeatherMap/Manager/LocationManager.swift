@@ -3,26 +3,6 @@ import Foundation
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
-<<<<<<< HEAD
-    @Published var location: CLLocation?
-    @Published var locationName: String = "Unknown"
-    
-    override init() {
-        super.init()
-        manager.delegate = self
-        manager.requestWhenInUseAuthorization()
-        manager.startUpdatingLocation()
-    }
-    
-    func getLocationName(from location: CLLocation) {
-        let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
-            guard error == nil else {
-                self.locationName = "\(location.coordinate.latitude), \(location.coordinate.longitude)"
-                return
-            }
-            
-=======
     @Published var location: CLLocationCoordinate2D?
     @Published var locationName: String = "Unknown"
     @Published var authorizationStatus: CLAuthorizationStatus
@@ -60,7 +40,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 return
             }
 
->>>>>>> dev-merge
             if let placemark = placemarks?.first {
                 self.locationName = [
                     placemark.name,
@@ -73,27 +52,15 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             }
         }
     }
-<<<<<<< HEAD
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
-            self.location = location
-=======
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
             let twoDimensionLocation = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
             self.location = twoDimensionLocation
->>>>>>> dev-merge
             getLocationName(from: location)
             manager.stopUpdatingLocation()
         }
     }
-<<<<<<< HEAD
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Failed to find user's location: \(error.localizedDescription)")
-=======
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         errorMessage = "Failed to find user's location: \(error.localizedDescription)"
@@ -102,6 +69,5 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         self.authorizationStatus = manager.authorizationStatus
         requestLocationAccess()
->>>>>>> dev-merge
     }
 }

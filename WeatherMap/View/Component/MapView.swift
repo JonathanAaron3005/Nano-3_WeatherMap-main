@@ -15,28 +15,6 @@ struct MapView: View {
     @Binding var routes: [MKRoute]
     @Binding var selectedResult: [MKMapItem]
     @Binding var routeDisplaying: Bool
-<<<<<<< HEAD
-    
-    var body: some View {
-        Map(position: $cameraPosition, selection: $mapSelection) {
-            Annotation("My Location", coordinate: .userLocation) {
-                ZStack {
-                    Circle()
-                        .frame(width: 32, height: 32)
-                        .foregroundStyle(.blue.opacity(0.25))
-                    Circle()
-                        .frame(width: 20, height: 20)
-                        .foregroundStyle(.white)
-                    Circle()
-                        .frame(width: 12, height: 12)
-                        .foregroundStyle(.blue)
-                }
-            }
-            ForEach(results, id: \.self) { item in
-                let placemark = item.placemark
-                Marker(placemark.name ?? "", coordinate: placemark.coordinate)
-            }
-=======
     @Binding var myLocation: MKMapItem?
     @Binding var weatherBadges: [(routeIndex: Int, stepIndex: Int, time: String, icon: String)]
     
@@ -61,14 +39,11 @@ struct MapView: View {
             //                let placemark = item.placemark
             //                Marker(placemark.name ?? "", coordinate: placemark.coordinate)
             //            }
->>>>>>> dev-merge
             ForEach(selectedResult, id: \.self) { item in
                 let placemark = item.placemark
                 Marker(placemark.name ?? "", coordinate: placemark.coordinate)
             }
             
-<<<<<<< HEAD
-=======
             ForEach(routes.indices, id: \.self) { routeIndex in
                 let route = routes[routeIndex]
                 MapPolyline(route.polyline)
@@ -81,7 +56,6 @@ struct MapView: View {
                 }
             }
             
->>>>>>> dev-merge
             ForEach(routes, id: \.self) { route in
                 MapPolyline(route.polyline)
                     .stroke(.blue, lineWidth: 6)
@@ -90,4 +64,3 @@ struct MapView: View {
         }
     }
 }
-

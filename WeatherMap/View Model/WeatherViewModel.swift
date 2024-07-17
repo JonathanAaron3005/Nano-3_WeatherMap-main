@@ -3,11 +3,6 @@
 //  WeatherMap
 //
 //  Created by Natasha Radika on 13/07/24.
-<<<<<<< HEAD
-// test
-=======
-//
->>>>>>> dev-merge
 
 import Foundation
 import CoreLocation

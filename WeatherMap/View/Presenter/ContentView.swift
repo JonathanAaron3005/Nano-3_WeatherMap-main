@@ -4,15 +4,11 @@ import CoreLocation
 import MapKit
 
 struct ContentView: View {
-<<<<<<< HEAD
-    @State private var cameraPosition: MapCameraPosition = .region(.userRegion)
-=======
     @State private var cameraPosition: MapCameraPosition = .region(MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
         latitudinalMeters: 10000,
         longitudinalMeters: 10000
     ))
->>>>>>> dev-merge
     @State private var searchText = ""
     @State private var searchTextIndex: Int?
     @State private var additionalSearchTexts = [String]()
@@ -25,18 +21,6 @@ struct ContentView: View {
     @State private var routeDestination: MKMapItem?
     @State private var transportType: TransportType = .automobile
     @ObservedObject private var locationManager = LocationManager()
-<<<<<<< HEAD
-    @State private var selectedResult = [MKMapItem]()
-    @State private var results = [MKMapItem]()
-    
-    var body: some View {
-        VStack {
-            MapView(cameraPosition: $cameraPosition, mapSelection: $mapSelection, results: $results, routes: $routes, selectedResult: $selectedResult, routeDisplaying: $routeDisplaying)
-                .overlay(alignment: .top) {
-                    VStack(spacing: -15) {
-                        SearchFormView(searchText: $searchText, additionalSearchTexts: $additionalSearchTexts, searchTextIndex: $searchTextIndex, locationManager: locationManager, searchPlaces: searchPlaces)
-                        TransportTypePicker(transportType: $transportType, routeDisplaying: $routeDisplaying, fetchRoute: fetchRoute)
-=======
     @State private var myLocation: MKMapItem?
     @State private var selectedResult = [MKMapItem]()
     @State private var results = [MKMapItem]()
@@ -49,7 +33,6 @@ struct ContentView: View {
                 .overlay(alignment: .top) {
                     VStack(spacing: -15) {
                         SearchFormView(searchText: $searchText, additionalSearchTexts: $additionalSearchTexts, searchTextIndex: $searchTextIndex, locationManager: locationManager, selectedResult: $selectedResult, myLocation: $myLocation, date: $date, transportType: $transportType, routeDisplaying: $routeDisplaying, routes: $routes, fetchRoute: fetchRoute)
->>>>>>> dev-merge
                     }
                 }
                 .onChange(of: getDirections) { _, newValue in
@@ -70,8 +53,6 @@ struct ContentView: View {
                     MapUserLocationButton()
                 }
         }
-<<<<<<< HEAD
-=======
         .onAppear {
             if let location = locationManager.location {
                 myLocation = MKMapItem(placemark: .init(coordinate: location))
@@ -85,85 +66,36 @@ struct ContentView: View {
                 ProgressView()
             }
         }
->>>>>>> dev-merge
     }
     
     func searchPlaces(searchText: String) async {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = searchText
-<<<<<<< HEAD
-        request.region = .userRegion
-=======
         let twoDimensionMyLocation = CLLocationCoordinate2D(latitude: (myLocation?.placemark.coordinate.latitude)!, longitude: (myLocation?.placemark.coordinate.longitude)!)
         request.region = .init(center: twoDimensionMyLocation, latitudinalMeters: 10000, longitudinalMeters: 10000)
->>>>>>> dev-merge
         
         let results = try? await MKLocalSearch(request: request).start()
         self.results += results?.mapItems ?? []
     }
     
-<<<<<<< HEAD
-    func fetchRoute() {
-        guard let mapSelection = mapSelection else { return }
-        
-        selectedResult.append(mapSelection)
-        
-        var stops = selectedResult.map { $0 }
-        stops.insert(MKMapItem(placemark: .init(coordinate: .userLocation)), at: 0)
-        for stop in stops {
-            print(stop)
-        }
-        
-        Task {
-            for i in 0..<stops.count - 1 {
-                let request = MKDirections.Request()
-                request.source = stops[i]
-                request.destination = stops[i + 1]
-                request.transportType = transportType.mkTransportType
-                
-                let result = try? await MKDirections(request: request).calculate()
-                if let route = result?.routes.first {
-                    routes.append(route)
-                    
-                    for step in route.steps {
-                        let coordinate = step.polyline.coordinate
-                        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-                        await fetchWeatherData(for: location)
-                    }
-                }
-            }
-            
-            if let firstRoute = routes.first {
-                let eta = firstRoute.expectedTravelTime
-                print("Estimated Travel Time: \(eta / 60) minutes")
-            }
-            
-            self.results = []
-            self.selectedResult = stops
-            
-            withAnimation(.snappy) {
-                routeDisplaying = true
-                showDetails = false
-                
-=======
 //    func fetchRoute() {
 //        var stops = selectedResult.map { $0 }
 //        stops.insert(myLocation!, at: 0)
-//        
+//
 //        Task {
 //            for i in 0..<stops.count - 1 {
 //                let request = MKDirections.Request()
 //                request.source = stops[i]
 //                request.destination = stops[i + 1]
 //                request.transportType = transportType.mkTransportType
-//                
+//
 //                let result = try? await MKDirections(request: request).calculate()
 //                if let route = result?.routes.first {
 //                    routes.append(route)
-//                    
+//
 //                    let eta = route.expectedTravelTime
 //                    print("Estimated Travel Time: \(eta / 60) minutes")
-//                    
+//
 //                    for step in route.steps {
 //                        let coordinate = step.polyline.coordinate
 //                        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
@@ -171,14 +103,14 @@ struct ContentView: View {
 //                    }
 //                }
 //            }
-//            
+//
 //            self.results = []
 //            self.selectedResult = stops
-//            
+//
 //            withAnimation(.snappy) {
 //                routeDisplaying = true
 //                showDetails = false
-//                
+//
 //                print(routes.first?.polyline)
 //                if let rect = routes.first?.polyline.boundingMapRect, routeDisplaying {
 //                    cameraPosition = .rect(rect)
@@ -188,9 +120,14 @@ struct ContentView: View {
 //    }
     
     func fetchRoute() {
+        routes.removeAll()
         let startTime = Calendar.current.date(bySettingHour: 10, minute: 0, second: 0, of: Date())!
         var stops = selectedResult.map { $0 }
-        stops.insert(myLocation!, at: 0)
+
+        // Check if the array contains an item with the same placemark name as myLocation
+        if !stops.contains(where: { $0.placemark.name == myLocation?.placemark.name }) {
+            stops.insert(myLocation!, at: 0)
+        }
         weatherBadges.removeAll()
 
         Task {
@@ -257,7 +194,6 @@ struct ContentView: View {
                 routeDisplaying = true
                 showDetails = false
 
->>>>>>> dev-merge
                 print(routes.first?.polyline)
                 if let rect = routes.first?.polyline.boundingMapRect, routeDisplaying {
                     cameraPosition = .rect(rect)
@@ -265,36 +201,6 @@ struct ContentView: View {
             }
         }
     }
-<<<<<<< HEAD
-    
-    func fetchWeatherData(for location: CLLocation) async {
-        do {
-            let weatherService = WeatherService.shared
-            let weather = try await weatherService.weather(for: location)
-            
-            if let hourlyForecast = weather.hourlyForecast.first {
-                let precipitationChance = hourlyForecast.precipitationChance
-                print("Precipitation chance at \(location.coordinate.latitude), \(location.coordinate.longitude): \(precipitationChance * 100)%")
-            } else {
-                print("No precipitation data available at \(location.coordinate.latitude), \(location.coordinate.longitude)")
-            }
-        } catch {
-            print("Failed to fetch weather data: \(error.localizedDescription)")
-        }
-    }
-}
-
-extension CLLocationCoordinate2D {
-    static var userLocation: CLLocationCoordinate2D {
-        return .init(latitude: 25.7602, longitude: -80.1959)
-    }
-}
-
-extension MKCoordinateRegion {
-    static var userRegion: MKCoordinateRegion {
-        return .init(center: .userLocation, latitudinalMeters: 10000, longitudinalMeters: 10000)
-    }
-=======
 
     func fetchWeatherData(for location: CLLocation, at date: Date) async -> Double? {
         let weatherService = WeatherService.shared
@@ -354,7 +260,7 @@ extension MKCoordinateRegion {
 //        do {
 //            let weatherService = WeatherService.shared
 //            let weather = try await weatherService.weather(for: location)
-//            
+//
 //            if let hourlyForecast = weather.hourlyForecast.first {
 //                let precipitationChance = hourlyForecast.precipitationChance
 //                print("Precipitation chance at \(location.coordinate.latitude), \(location.coordinate.longitude): \(precipitationChance * 100)%")
@@ -365,7 +271,6 @@ extension MKCoordinateRegion {
 //            print("Failed to fetch weather data: \(error.localizedDescription)")
 //        }
 //    }
->>>>>>> dev-merge
 }
 
 #Preview {

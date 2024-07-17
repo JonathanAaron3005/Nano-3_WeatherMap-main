@@ -11,11 +11,8 @@ import MapKit
 struct TransportTypePicker: View {
     @Binding var transportType: TransportType
     @Binding var routeDisplaying: Bool
-<<<<<<< HEAD
-=======
     @Binding var routes: [MKRoute]
     
->>>>>>> dev-merge
     var fetchRoute: () -> Void
     
     var body: some View {
@@ -27,32 +24,9 @@ struct TransportTypePicker: View {
         .padding()
         .onChange(of: transportType) { _, newValue in
             if routeDisplaying {
-<<<<<<< HEAD
-=======
                 routes.removeAll()
->>>>>>> dev-merge
                 fetchRoute()
             }
         }
     }
 }
-
-<<<<<<< HEAD
-enum TransportType: String, Hashable {
-    case automobile
-    case walking
-    
-    var mkTransportType: MKDirectionsTransportType {
-        switch self {
-        case .automobile:
-            return .automobile
-        case .walking:
-            return .walking
-        }
-    }
-}
-=======
->>>>>>> dev-merge
-
-
-
