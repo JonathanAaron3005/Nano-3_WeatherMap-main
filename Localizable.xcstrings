@@ -30,6 +30,17 @@
     "%lld" : {
 
     },
+    "Add Destination" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tambah Destinasi"
+          }
+        }
+      }
+    },
     "Add Place" : {
       "localizations" : {
         "id" : {
@@ -101,7 +112,14 @@
       }
     },
     "Destination Finder" : {
-
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Destination Finder"
+          }
+        }
+      }
     },
     "Done" : {
       "localizations" : {
@@ -174,7 +192,14 @@
       }
     },
     "MM" : {
-
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MM"
+          }
+        }
+      }
     },
     "New Place" : {
       "localizations" : {
@@ -323,7 +348,14 @@
       }
     },
     "Title" : {
-
+      "localizations" : {
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Judul"
+          }
+        }
+      }
     },
     "Transport Type" : {
       "localizations" : {
