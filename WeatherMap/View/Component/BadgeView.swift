@@ -1,9 +1,11 @@
 import SwiftUI
 
 struct BadgeView: View {
-    @State private var isPressed: Bool = false
     @Binding var time: String
     @Binding var icon: String
+    @Binding var isSelected: Bool
+    
+    var onTap: () -> Void
     
     var body: some View {
         VStack(spacing: 4) {
@@ -17,38 +19,33 @@ struct BadgeView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(isPressed ? Color(red: 1/255, green: 60/255, blue: 255/255) : Color(red: 1/255, green: 60/255, blue: 255/255).opacity(0.8))
+        .background(isSelected ? Color(red: 1/255, green: 60/255, blue: 255/255) : Color(red: 1/255, green: 60/255, blue: 255/255).opacity(0.8))
         .clipShape(RoundedRectangle(cornerRadius: 25))
         .shadow(radius: 8)
         .overlay(
             RoundedRectangle(cornerRadius: 25)
-                .stroke(isPressed ? Color.white : Color.clear, lineWidth: 4)
+                .stroke(isSelected ? Color.white : Color.clear, lineWidth: 4)
         )
         .overlay(
             Triangle()
-                .fill(isPressed ? Color(red: 1/255, green: 60/255, blue: 255/255) : Color(red: 1/255, green: 60/255, blue: 255/255).opacity(0.8))
+                .fill(isSelected ? Color(red: 1/255, green: 60/255, blue: 255/255) : Color(red: 1/255, green: 60/255, blue: 255/255).opacity(0.8))
                 .frame(width: 20, height: 10)
                 .offset(y: 10)
                 .overlay(
-                    
                     Triangle()
-                        .stroke(isPressed ? Color.white : Color.clear, lineWidth: 3)
+                        .stroke(isSelected ? Color.white : Color.clear, lineWidth: 3)
                         .frame(width: 20, height: 10)
                         .offset(y: 10)
-                    
                 )
             , alignment: .bottom
         )
-        .scaleEffect(isPressed ? 1.5 : 1.0)
+        .scaleEffect(isSelected ? 1.5 : 1.0)
         .onTapGesture {
             withAnimation {
-                isPressed.toggle()
-
+                onTap()
             }
         }
     }
-    
-    
 }
 
 struct Triangle: Shape {
@@ -64,7 +61,9 @@ struct Triangle: Shape {
 
 struct BadgeView_Previews: PreviewProvider {
     static var previews: some View {
-        BadgeView(time: .constant("16.00"), icon: .constant("cloud.rain.fill"))
+        BadgeView(time: .constant("16.00"), icon: .constant("cloud.rain.fill"), isSelected: .constant(false)) {
+            print("tes")
+        }
     }
 }
 

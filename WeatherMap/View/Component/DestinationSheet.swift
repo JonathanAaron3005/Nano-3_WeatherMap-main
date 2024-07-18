@@ -85,8 +85,8 @@ struct DestinationSheet: View {
     }
 }
 
-#Preview {
-    DestinationSheet(title: .constant(""), selectedResult: .constant([MKMapItem]()), fetchRoute: {
-        print("tes")
-    }, myLocation: .constant(MKMapItem()))
-}
+//#Preview {
+//    DestinationSheet(title: .constant(""), selectedResult: .constant([MKMapItem]()), fetchRoute: {
+//        print("tes")
+//    }, myLocation: .constant(MKMapItem()))
+//}

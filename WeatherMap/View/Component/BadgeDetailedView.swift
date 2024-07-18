@@ -2,12 +2,12 @@ import SwiftUI
 
 struct BadgeDetailedView: View {
     // MARK: - Properties
-    var location: String = "McDonald, Edutown"
-    var weatherDescription: String = "Heavy Rain"
-    var probability: Double = 1.0
-    var precipitation: Int = 3
-    var temperature: Double = 50
-    var time: String = "09.45"
+    var location: String
+    var weatherDescription: String
+    var probability: Double
+    var precipitation: Int
+    var temperature: Int
+    var time: String
     
     @State private var isDetailVisible: Bool = true
     
@@ -36,7 +36,6 @@ struct BadgeDetailedView: View {
         )
     }
 
-
     func blackDotPosition(for value: Double) -> Angle {
         return Angle(degrees: 306 * value - 153)
     }
@@ -52,7 +51,6 @@ struct BadgeDetailedView: View {
                     .cornerRadius(3)
                     .background(Color.white.frame(width: 44, height: 5).cornerRadius(4))
                     .padding(.top, 5)
-                    .offset(y: -14)
                 
                 HStack {
                     VStack(alignment: .leading) {
@@ -73,7 +71,6 @@ struct BadgeDetailedView: View {
                                 .foregroundColor(.gray)
                                 .frame(width: 30, height: 30)
                                 .contentShape(Rectangle())
-                                .offset(x: 25, y: -16)
                         }
                         
                         HStack(spacing: 2) {
@@ -131,12 +128,13 @@ struct BadgeDetailedView: View {
                         Spacer()
                         
                         GradientCircle(
-                            value: temperature / 50,
+                            value: Double(temperature / 50),
                             gradient: getTemperatureGradient(),
                             label: "\(Int(temperature))°",
                             icon: "thermometer",
                             title: "TEMPERATURE"
                         )
+
                         
                         Spacer()
                     }
@@ -150,8 +148,7 @@ struct BadgeDetailedView: View {
             .background(Color.white)
             .cornerRadius(15)
             .shadow(radius: 5)
-            .offset(y: 490)
-            .offset(y: isDetailVisible ? 0 : 500)
+            .transition(.move(edge: .bottom))
         }
     }
 }
@@ -208,11 +205,5 @@ struct GradientCircle: View {
                 .foregroundColor(.black)
                 .offset(y: -20)
         }
-    }
-}
-
-struct WeatherView_Previews: PreviewProvider {
-    static var previews: some View {
-        BadgeDetailedView()
     }
 }

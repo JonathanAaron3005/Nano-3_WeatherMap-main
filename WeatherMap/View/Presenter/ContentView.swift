@@ -26,10 +26,11 @@ struct ContentView: View {
     @State private var results = [MKMapItem]()
     @State private var date = Date()
     @State var weatherBadges = [(routeIndex: Int, stepIndex: Int, time: String, icon: String)]()
+    @State private var weatherData: [Int: WeatherData] = [:]
     
     var body: some View {
         VStack {
-            MapView(cameraPosition: $cameraPosition, mapSelection: $mapSelection, results: $results, routes: $routes, selectedResult: $selectedResult, routeDisplaying: $routeDisplaying, myLocation: $myLocation, weatherBadges: $weatherBadges)
+            MapView(cameraPosition: $cameraPosition, mapSelection: $mapSelection, results: $results, routes: $routes, selectedResult: $selectedResult, routeDisplaying: $routeDisplaying, myLocation: $myLocation, weatherBadges: $weatherBadges, weatherData: $weatherData)
                 .overlay(alignment: .top) {
                     VStack(spacing: -15) {
                         SearchFormView(searchText: $searchText, additionalSearchTexts: $additionalSearchTexts, searchTextIndex: $searchTextIndex, locationManager: locationManager, selectedResult: $selectedResult, myLocation: $myLocation, date: $date, transportType: $transportType, routeDisplaying: $routeDisplaying, routes: $routes, fetchRoute: fetchRoute)
@@ -68,6 +69,23 @@ struct ContentView: View {
         }
     }
     
+    func fetchPlaceName(at coordinate: CLLocationCoordinate2D) async -> String? {
+        return await withCheckedContinuation { continuation in
+            let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
+                if let error = error {
+                    print("Failed to fetch place name: \(error.localizedDescription)")
+                    continuation.resume(returning: nil)
+                } else if let placemark = placemarks?.first {
+                    let placeName = placemark.name ?? placemark.locality ?? "Unknown Location"
+                    continuation.resume(returning: placeName)
+                } else {
+                    continuation.resume(returning: "Unknown Location")
+                }
+            }
+        }
+    }
+    
     func searchPlaces(searchText: String) async {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = searchText
@@ -78,60 +96,21 @@ struct ContentView: View {
         self.results += results?.mapItems ?? []
     }
     
-//    func fetchRoute() {
-//        var stops = selectedResult.map { $0 }
-//        stops.insert(myLocation!, at: 0)
-//
-//        Task {
-//            for i in 0..<stops.count - 1 {
-//                let request = MKDirections.Request()
-//                request.source = stops[i]
-//                request.destination = stops[i + 1]
-//                request.transportType = transportType.mkTransportType
-//
-//                let result = try? await MKDirections(request: request).calculate()
-//                if let route = result?.routes.first {
-//                    routes.append(route)
-//
-//                    let eta = route.expectedTravelTime
-//                    print("Estimated Travel Time: \(eta / 60) minutes")
-//
-//                    for step in route.steps {
-//                        let coordinate = step.polyline.coordinate
-//                        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-//                        await fetchWeatherData(for: location)
-//                    }
-//                }
-//            }
-//
-//            self.results = []
-//            self.selectedResult = stops
-//
-//            withAnimation(.snappy) {
-//                routeDisplaying = true
-//                showDetails = false
-//
-//                print(routes.first?.polyline)
-//                if let rect = routes.first?.polyline.boundingMapRect, routeDisplaying {
-//                    cameraPosition = .rect(rect)
-//                }
-//            }
-//        }
-//    }
-    
     func fetchRoute() {
         routes.removeAll()
-        let startTime = Calendar.current.date(bySettingHour: 10, minute: 0, second: 0, of: Date())!
         var stops = selectedResult.map { $0 }
 
         // Check if the array contains an item with the same placemark name as myLocation
-        if !stops.contains(where: { $0.placemark.name == myLocation?.placemark.name }) {
-            stops.insert(myLocation!, at: 0)
+        if let myLocation = myLocation, !stops.contains(where: { $0.name == myLocation.name }) {
+            stops.insert(myLocation, at: 0)
         }
         weatherBadges.removeAll()
 
         Task {
-            var currentTime = startTime
+            var currentTime = date
+            
+            let timeFormatter = DateFormatter()
+            timeFormatter.dateFormat = "HH:mm"
             
             for (routeIndex, _) in stops.enumerated() {
                 guard routeIndex < stops.count - 1 else { break }
@@ -156,7 +135,7 @@ struct ContentView: View {
 
                     for (stepIndex, step) in route.steps.enumerated() {
                         let coordinate = step.polyline.coordinate
-                        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+                        let location = stops[routeIndex + 1] // Use the next stop as the location
 
                         // Calculate the distance between steps
                         let stepDistance = step.distance // distance in meters
@@ -168,16 +147,16 @@ struct ContentView: View {
                         let stepArrivalTime = currentTime.addingTimeInterval(stepTravelTime)
 
                         if indices.contains(stepIndex) {
-                            // Fetch the weather data for the estimated arrival time
-                            if let precipitationChance = await fetchWeatherData(for: location, at: stepArrivalTime) {
-                                // Create a weather badge
-                                let timeFormatter = DateFormatter()
-                                timeFormatter.dateFormat = "HH:mm"
-                                let timeString = timeFormatter.string(from: stepArrivalTime)
+                            let placeName = await fetchPlaceName(at: coordinate)
+                            let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: nil)
+                            let addedLocation = MKMapItem(placemark: placemark)
+                                                addedLocation.name = placeName ?? "Location \(stepIndex)"
+                            if let weatherData = await fetchWeatherData(for: addedLocation, at: stepArrivalTime, stepIndex: stepIndex, timeString: timeFormatter.string(from: stepArrivalTime)) {
+                                // Create a weather badge with the destination name
+                                weatherBadges.append((routeIndex: routeIndex, stepIndex: stepIndex, time: weatherData.time, icon: weatherData.weatherIcon))
 
-                                let weatherIcon = getWeatherIcon(precipitationChance: precipitationChance)
-
-                                weatherBadges.append((routeIndex: routeIndex, stepIndex: stepIndex, time: timeString, icon: weatherIcon))
+                                // Save the weather data for the step
+                                self.weatherData[stepIndex] = weatherData
                             }
                         }
 
@@ -194,7 +173,6 @@ struct ContentView: View {
                 routeDisplaying = true
                 showDetails = false
 
-                print(routes.first?.polyline)
                 if let rect = routes.first?.polyline.boundingMapRect, routeDisplaying {
                     cameraPosition = .rect(rect)
                 }
@@ -202,14 +180,11 @@ struct ContentView: View {
         }
     }
 
-    func fetchWeatherData(for location: CLLocation, at date: Date) async -> Double? {
+    func fetchWeatherData(for location: MKMapItem, at date: Date, stepIndex: Int, timeString: String) async -> WeatherData? {
         let weatherService = WeatherService.shared
         do {
-            let weather = try await weatherService.weather(for: location)
+            let weather = try await weatherService.weather(for: CLLocation(latitude: location.placemark.coordinate.latitude, longitude: location.placemark.coordinate.longitude))
             let hourlyForecasts = weather.hourlyForecast
-
-            // Ensure the hourlyForecasts is not nil
-
 
             let hourlyForecast = hourlyForecasts.first { hour in
                 Calendar.current.isDate(hour.date, equalTo: date, toGranularity: .hour)
@@ -217,10 +192,22 @@ struct ContentView: View {
 
             if let hourlyForecast = hourlyForecast {
                 let precipitationChance = hourlyForecast.precipitationChance
-                print("Precipitation chance at \(location.coordinate.latitude), \(location.coordinate.longitude): \(precipitationChance * 100)%")
-                return precipitationChance
+                let temperatureMeasurement = hourlyForecast.temperature
+                let temperature = Int(temperatureMeasurement.converted(to: .celsius).value)
+                let weatherDescription = getWeatherDescription(from: hourlyForecast.symbolName)
+                
+                let locationName = location.placemark.name ?? "Location \(stepIndex)"
+
+                return WeatherData(
+                    location: locationName,
+                    weatherDescription: weatherDescription,
+                    probability: precipitationChance,
+                    precipitation: Int(precipitationChance * 100),
+                    temperature: temperature,
+                    time: timeString, weatherIcon: hourlyForecast.symbolName
+                )
             } else {
-                print("No precipitation data available at \(location.coordinate.latitude), \(location.coordinate.longitude)")
+                print("No weather data available at \(location.placemark.name)")
                 return nil
             }
         } catch {
@@ -240,37 +227,24 @@ struct ContentView: View {
         
         return indices
     }
-
-    func getWeatherIcon(precipitationChance: Double) -> String {
-        switch precipitationChance {
-        case 0..<0.2:
-            return "sun.max.fill"
-        case 0.2..<0.5:
-            return "cloud.sun.fill"
-        case 0.5..<0.8:
-            return "cloud.rain.fill"
-        case 0.8...1:
-            return "cloud.heavyrain.fill"
-        default:
-            return "questionmark"
-        }
-    }
     
-//    func fetchWeatherData(for location: CLLocation) async {
-//        do {
-//            let weatherService = WeatherService.shared
-//            let weather = try await weatherService.weather(for: location)
-//
-//            if let hourlyForecast = weather.hourlyForecast.first {
-//                let precipitationChance = hourlyForecast.precipitationChance
-//                print("Precipitation chance at \(location.coordinate.latitude), \(location.coordinate.longitude): \(precipitationChance * 100)%")
-//            } else {
-//                print("No precipitation data available at \(location.coordinate.latitude), \(location.coordinate.longitude)")
-//            }
-//        } catch {
-//            print("Failed to fetch weather data: \(error.localizedDescription)")
-//        }
-//    }
+    func getWeatherDescription(from symbolName: String) -> String {
+        print("Weather Symbol Name: \(symbolName)")
+        let weatherDescriptions: [String: String] = [
+            "clear_sky": "Clear Sky",
+            "few_clouds": "Few Clouds",
+            "scattered_clouds": "Scattered Clouds",
+            "broken_clouds": "Broken Clouds",
+            "shower_rain": "Shower Rain",
+            "rain": "Rain",
+            "thunderstorm": "Thunderstorm",
+            "snow": "Snow",
+            "mist": "Mist",
+            "sun.max": "Sunny"
+        ]
+
+        return weatherDescriptions[symbolName] ?? "Unknown Weather"
+    }
 }
 
 #Preview {

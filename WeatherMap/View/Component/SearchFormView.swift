@@ -15,7 +15,6 @@ struct SearchFormView: View {
     @ObservedObject var locationManager: LocationManager
     @Binding var selectedResult: [MKMapItem]
     @Binding var myLocation: MKMapItem?
-//    var searchPlaces: (String) async -> Void
 
     @State private var showAddDestinationSheet = false
     @State private var showDraggableList = false
